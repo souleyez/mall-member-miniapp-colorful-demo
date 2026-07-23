@@ -1,0 +1,901 @@
+<view class="demo-page theme-pop {{currentView !== 'home' ? 'theme-light theme-inner-soft' : ''}} view-{{currentView}}">
+  <view class="screen {{leaving ? 'screen-leave' : 'screen-enter'}} {{showBottom ? 'screen-with-bottom' : ''}}">
+    <block wx:if="{{currentView !== 'home'}}">
+      <view class="nav-safe" style="height: {{statusBarHeight}}px"></view>
+      <view class="nav-bar">
+        <view class="nav-back tap-target" hover-class="tap-press" bindtap="goBack">‹</view>
+        <text class="nav-title">{{viewTitle}}</text>
+      </view>
+    </block>
+
+    <!-- 1 探索首页 -->
+    <block wx:if="{{currentView === 'home'}}">
+      <view class="home-hero pop-home-hero pop-home-hero-{{homeConfig.bannerTone}} {{homeRefreshing ? 'home-refreshing' : ''}}">
+        <view class="nav-safe" style="height: {{statusBarHeight}}px"></view>
+        <view class="home-nav">
+          <view class="mall-pill tap-target" hover-class="tap-press" bindtap="openMallSheet">
+            <text class="pop-location-dot">●</text><text>{{mallName}}</text><text class="chevron-down">⌄</text>
+          </view>
+        </view>
+    <swiper class="pop-hero-swiper" current="{{heroCurrent}}" circular duration="420" bindchange="onHeroChange">
+          <swiper-item wx:for="{{homeConfig.heroSlides}}" wx:key="id" wx:for-item="heroSlide" wx:for-index="heroIndex">
+            <view class="pop-hero-poster pop-hero-poster-{{heroSlide.tone}} tap-target" hover-class="tap-press" data-id="{{heroSlide.activityId}}" bindtap="openHeroSlide">
+              <view class="pop-paper-edge"></view>
+              <image class="pop-hero-scene" src="{{heroSlide.image}}" mode="widthFix" />
+              <text class="pop-doodle pop-doodle-star">★</text><text class="pop-doodle pop-doodle-sun">☀</text><text class="pop-doodle pop-doodle-wave">〰</text>
+              <view class="pop-hero-copy"><text class="pop-hero-kicker">{{heroSlide.eyebrow}}</text><text class="pop-hero-title">{{heroSlide.title}}</text><text class="pop-hero-ribbon">{{heroSlide.ribbon}}</text><text class="pop-hero-date">{{heroSlide.date}}</text></view>
+              <view class="pop-door"><view></view><text>GO</text></view><view class="pop-runner">↗</view>
+              <view class="pop-hero-action">{{heroSlide.action}} <text>→</text></view>
+            </view>
+          </swiper-item>
+        </swiper>
+        <view class="pop-hero-dots"><text wx:for="{{homeConfig.heroSlides}}" wx:key="id" wx:for-item="heroDot" wx:for-index="heroDotIndex" class="{{heroDotIndex === heroCurrent ? 'active' : ''}}"></text></view>
+      </view>
+
+      <view class="home-body {{homeRefreshing ? 'home-refreshing' : ''}}">
+        <view wx:if="{{homeConfig.couponShowcaseAboveServices && availableCouponCount > 0}}" class="home-coupon-showcase">
+          <view class="home-coupon-showcase-head">
+            <view><text>今日好券</text><text>先领券，再开启城市漫游</text></view>
+            <view class="tap-target" hover-class="tap-press" data-target="coupons" bindtap="navigate">全部好券 ›</view>
+          </view>
+          <scroll-view class="home-coupon-showcase-scroll" scroll-x enable-flex show-scrollbar="{{false}}">
+            <view class="home-coupon-showcase-track">
+              <view wx:for="{{availableCoupons}}" wx:key="id" wx:for-item="coupon" wx:for-index="couponIndex" class="home-coupon-mini home-coupon-mini-{{couponIndex}} tap-target" hover-class="tap-press" data-source="available" data-index="{{couponIndex}}" bindtap="openCoupon">
+                <view class="home-coupon-mini-top"><text>{{coupon.method}}</text><text>COUPON</text></view>
+                <text class="home-coupon-mini-title">{{coupon.title}}</text>
+                <text class="home-coupon-mini-note">{{coupon.note}}</text>
+                <view class="home-coupon-mini-bottom"><text>{{coupon.cta}}</text><text>领取 ›</text></view>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+
+        <view class="home-play-zone">
+          <view class="home-play-head"><view><text>会员乐园</text><text>常用服务一站直达</text></view><text>8 SERVICES</text></view>
+          <view wx:if="{{homeConfig.memberPosition === 'services'}}" class="member-summary pop-member-strip member-theme-{{homeConfig.memberTheme}} tap-target" hover-class="tap-press" data-target="card" bindtap="navigate">
+            <view class="pop-member-avatar">{{homeConfig.memberMark}}</view>
+            <view class="member-copy"><text class="member-name"><text class="member-name-key">{{homeConfig.memberName}}</text><text class="member-name-suffix">会员</text></text><text class="member-sub">我的艺享积分 <text class="gold-number">{{points}}</text></text></view>
+            <view class="pop-member-arrow">→</view>
+          </view>
+          <view class="shortcut-row pop-shortcut-grid">
+            <view class="shortcut pop-shortcut tone-yellow tap-target" hover-class="tap-press" data-target="points" bindtap="navigate"><view class="pop-line-icon"><image class="pop-line-icon-image" src="/assets/icons/pop/points.png" mode="aspectFit" /></view><text class="shortcut-label">积分中心</text></view>
+            <view class="shortcut pop-shortcut tone-pink tap-target" hover-class="tap-press" data-target="coupons" bindtap="navigate"><view class="pop-line-icon"><image class="pop-line-icon-image" src="/assets/icons/pop/coupons.png" mode="aspectFit" /></view><text class="shortcut-label">卡券包</text></view>
+            <view class="shortcut pop-shortcut tone-blue tap-target" hover-class="tap-press" data-target="parking" bindtap="navigate"><view class="pop-line-icon"><image class="pop-line-icon-image" src="/assets/icons/pop/parking.png" mode="aspectFit" /></view><text class="shortcut-label">停车缴费</text></view>
+            <view class="shortcut pop-shortcut tone-violet tap-target" hover-class="tap-press" data-target="service" bindtap="navigate"><view class="pop-line-icon"><image class="pop-line-icon-image" src="/assets/icons/pop/service.png" mode="aspectFit" /></view><text class="shortcut-label">商场服务</text></view>
+            <view class="shortcut pop-shortcut tone-mint tap-target" hover-class="tap-press" data-target="activityList" bindtap="navigate"><view class="pop-line-icon"><image class="pop-line-icon-image" src="/assets/icons/pop/activity.png" mode="aspectFit" /></view><text class="shortcut-label">活动日历</text></view>
+            <view class="shortcut pop-shortcut tone-yellow tap-target" hover-class="tap-press" data-target="mall" bindtap="navigate"><view class="pop-line-icon"><image class="pop-line-icon-image" src="/assets/icons/pop/mall.png" mode="aspectFit" /></view><text class="shortcut-label">礼遇商城</text></view>
+            <view class="shortcut pop-shortcut tone-pink tap-target" hover-class="tap-press" data-target="card" bindtap="navigate"><view class="pop-line-icon"><image class="pop-line-icon-image" src="/assets/icons/pop/member-card.png" mode="aspectFit" /></view><text class="shortcut-label">会员卡</text></view>
+            <view class="shortcut pop-shortcut tone-blue tap-target" hover-class="tap-press" data-target="customerService" bindtap="navigate"><view class="pop-line-icon"><image class="pop-line-icon-image" src="/assets/icons/pop/customer-service.png" mode="aspectFit" /></view><text class="shortcut-label">联系我们</text></view>
+          </view>
+        </view>
+
+        <block wx:for="{{homeConfig.layout}}" wx:key="*this" wx:for-item="homeModule">
+          <view wx:if="{{homeModule === 'coupon' && availableCouponCount > 0}}" class="home-coupon-teaser home-module tap-target" hover-class="tap-press" data-source="available" data-index="0" bindtap="openCoupon">
+            <image class="home-coupon-image" src="/assets/images/pop-home/coffee-lifestyle.jpg" mode="aspectFill" />
+            <view class="home-coupon-copy">
+              <view class="home-coupon-meta"><text class="home-coupon-badge">可领取</text><text>{{availableCoupons[0].method}}</text></view>
+              <text class="home-coupon-title">{{availableCoupons[0].title}}</text>
+              <text class="home-coupon-note">{{availableCoupons[0].note}}</text>
+            </view>
+            <view class="home-coupon-action"><text>领取</text><text class="home-coupon-arrow">›</text></view>
+          </view>
+
+          <view wx:if="{{homeModule === 'banner'}}" class="activity-banner activity-banner-{{homeConfig.bannerTone}} home-module tap-target" hover-class="tap-press" data-target="activityList" bindtap="navigate">
+            <image class="activity-banner-image" src="{{homeConfig.bannerImage}}" mode="aspectFit" />
+            <view class="activity-banner-shade"></view>
+            <view class="activity-banner-copy"><text class="activity-banner-kicker">{{homeConfig.bannerKicker}}</text><text class="activity-banner-title">{{homeConfig.bannerTitle}}</text><text class="activity-banner-note">{{homeConfig.bannerNote}}</text></view>
+            <view class="activity-banner-arrow"><text>全部活动</text><text>›</text></view>
+          </view>
+
+          <view wx:if="{{homeModule === 'member'}}" class="member-summary pop-member-strip pop-member-strip-flow pop-member-strip-{{homeConfig.bannerTone}} member-theme-{{homeConfig.memberTheme}} home-module tap-target" hover-class="tap-press" data-target="card" bindtap="navigate">
+            <view class="pop-member-avatar">{{homeConfig.memberMark}}</view>
+            <view class="member-copy"><text class="member-name"><text class="member-name-key">{{homeConfig.memberName}}</text><text class="member-name-suffix">会员</text></text><text class="member-sub">我的艺享积分 <text class="gold-number">{{points}}</text></text></view>
+            <view class="pop-member-arrow">→</view>
+          </view>
+
+          <view wx:if="{{homeModule === 'inspiration'}}" class="home-module">
+            <view class="section-heading"><view><text class="section-title">{{homeConfig.inspirationTitle}}</text><text class="section-en">{{homeConfig.inspirationSub}}</text></view><view class="text-link tap-target" hover-class="tap-press" data-target="contentCenter" bindtap="navigate">查看全部 ›</view></view>
+            <scroll-view class="inspiration-scroll" scroll-x enable-flex>
+              <view wx:for="{{homeConfig.inspirations}}" wx:key="title" wx:for-item="inspiration" class="inspiration-card tap-target" hover-class="tap-press" data-id="{{inspiration.contentId}}" bindtap="openContent"><image class="thumb" src="{{inspiration.image}}" mode="aspectFill" /><text class="card-title">{{inspiration.title}}</text><text class="card-caption">{{inspiration.caption}}</text></view>
+            </scroll-view>
+          </view>
+        </block>
+
+        <view class="home-commerce-section">
+          <view class="commerce-rail-head"><view><text class="commerce-rail-kicker">GROUP DEAL</text><text class="section-title">团购精选</text><text class="section-en">一起拼更划算 · 到店核销有保障</text></view><view class="text-link tap-target" hover-class="tap-press" data-target="groupBuy" bindtap="navigate">全部团购 ›</view></view>
+          <scroll-view class="commerce-rail" scroll-x enable-flex show-scrollbar="false">
+            <view wx:for="{{homeConfig.commerce.groupBuys}}" wx:key="id" wx:for-item="commerceItem" class="commerce-mini-card group tap-target" hover-class="tap-press" data-type="group" data-index="{{index}}" bindtap="openCommerceProduct">
+              <view class="commerce-mini-visual"><image src="{{commerceItem.image}}" mode="aspectFill" /><text>{{commerceItem.badge}}</text></view>
+              <view class="commerce-mini-copy"><text class="commerce-mini-store">{{commerceItem.store}}</text><text class="commerce-mini-name">{{commerceItem.name}}</text><text class="commerce-mini-spec">{{commerceItem.spec}}</text><view class="commerce-mini-price"><view><text>¥</text><text>{{commerceItem.price}}</text><text>¥{{commerceItem.originalPrice}}</text></view><text>{{commerceItem.sold}}</text></view></view>
+            </view>
+          </scroll-view>
+
+          <view class="commerce-rail-head shop-head"><view><text class="commerce-rail-kicker">ONLINE SHOP</text><text class="section-title">在线商城</text><text class="section-en">商场精选好物 · 支持配送与到店自提</text></view><view class="text-link tap-target" hover-class="tap-press" data-target="onlineShop" bindtap="navigate">进入商城 ›</view></view>
+          <scroll-view class="commerce-rail" scroll-x enable-flex show-scrollbar="false">
+            <view wx:for="{{homeConfig.commerce.shopProducts}}" wx:key="id" wx:for-item="commerceItem" class="commerce-mini-card shop tap-target" hover-class="tap-press" data-type="shop" data-index="{{index}}" bindtap="openCommerceProduct">
+              <view class="commerce-mini-visual"><image src="{{commerceItem.image}}" mode="aspectFill" /><text>{{commerceItem.badge}}</text></view>
+              <view class="commerce-mini-copy"><text class="commerce-mini-store">{{commerceItem.store}}</text><text class="commerce-mini-name">{{commerceItem.name}}</text><text class="commerce-mini-spec">{{commerceItem.spec}}</text><view class="commerce-mini-price"><view><text>¥</text><text>{{commerceItem.price}}</text><text>¥{{commerceItem.originalPrice}}</text></view><text>{{commerceItem.sold}}</text></view></view>
+            </view>
+          </scroll-view>
+        </view>
+
+        <view class="waterfall-section">
+          <view class="waterfall-heading"><view><text class="section-title">店铺优惠精选</text><text class="section-en">边逛边发现，更多优惠持续加载</text></view><text class="waterfall-count">已展示 {{homeFeedVisibleCount}}</text></view>
+          <view class="waterfall-grid">
+            <view class="waterfall-column">
+              <view wx:for="{{homeFeedLeft}}" wx:key="title" wx:for-item="feedItem" class="waterfall-card waterfall-card-{{feedItem.kind}} tap-target" style="animation-delay: {{feedItem.delay}}ms" hover-class="tap-press" data-target="{{feedItem.target}}" bindtap="navigate">
+                <view wx:if="{{feedItem.kind === 'coupon'}}" class="waterfall-coupon-visual coupon-tone-{{feedItem.tone}} {{feedItem.height}}"><text class="waterfall-coupon-mark">券</text><text class="waterfall-coupon-word">会员专享</text><text class="waterfall-coupon-cut">领</text></view>
+                <view wx:if="{{feedItem.kind === 'invite'}}" class="waterfall-invite-visual {{feedItem.height}}"><text>邀</text><view><text>好友同行</text><text>+300 积分</text></view></view>
+                <image wx:if="{{feedItem.kind === 'store'}}" class="waterfall-image {{feedItem.height}}" src="{{feedItem.image}}" mode="aspectFill" />
+                <view class="waterfall-card-body"><text class="waterfall-label">{{feedItem.label}}</text><text class="waterfall-title">{{feedItem.title}}</text><text class="waterfall-caption">{{feedItem.caption}}</text><view class="waterfall-cta"><text>{{feedItem.kind === 'coupon' ? '立即领取' : (feedItem.kind === 'invite' ? '去邀请' : '进店看看')}}</text><text>›</text></view></view>
+              </view>
+            </view>
+            <view class="waterfall-column">
+              <view wx:for="{{homeFeedRight}}" wx:key="title" wx:for-item="feedItem" class="waterfall-card waterfall-card-{{feedItem.kind}} tap-target" style="animation-delay: {{feedItem.delay}}ms" hover-class="tap-press" data-target="{{feedItem.target}}" bindtap="navigate">
+                <view wx:if="{{feedItem.kind === 'coupon'}}" class="waterfall-coupon-visual coupon-tone-{{feedItem.tone}} {{feedItem.height}}"><text class="waterfall-coupon-mark">券</text><text class="waterfall-coupon-word">会员专享</text><text class="waterfall-coupon-cut">领</text></view>
+                <view wx:if="{{feedItem.kind === 'invite'}}" class="waterfall-invite-visual {{feedItem.height}}"><text>邀</text><view><text>好友同行</text><text>+300 积分</text></view></view>
+                <image wx:if="{{feedItem.kind === 'store'}}" class="waterfall-image {{feedItem.height}}" src="{{feedItem.image}}" mode="aspectFill" />
+                <view class="waterfall-card-body"><text class="waterfall-label">{{feedItem.label}}</text><text class="waterfall-title">{{feedItem.title}}</text><text class="waterfall-caption">{{feedItem.caption}}</text><view class="waterfall-cta"><text>{{feedItem.kind === 'coupon' ? '立即领取' : (feedItem.kind === 'invite' ? '去邀请' : '进店看看')}}</text><text>›</text></view></view>
+              </view>
+            </view>
+          </view>
+          <view wx:if="{{homeFeedLoading}}" class="waterfall-loading"><view></view><view></view><text>正在加载更多店铺优惠...</text></view>
+          <view wx:else class="waterfall-more tap-target" hover-class="tap-press" bindtap="loadMoreHomeFeed"><text>{{homeFeedHasMore ? '继续逛逛，加载更多' : '更多店铺优惠即将上线'}}</text><text>{{homeFeedHasMore ? '⌄' : '·'}}</text></view>
+        </view>
+
+      </view>
+    </block>
+
+    <!-- 多商场聚合展示 -->
+    <block wx:if="{{currentView === 'mallCollection'}}">
+      <view class="content mall-collection-page">
+        <view class="mall-collection-hero">
+          <view class="mall-collection-orbit orbit-one"></view><view class="mall-collection-orbit orbit-two"></view>
+          <text class="mall-collection-eyebrow">MULTI-MALL EXPERIENCE</text><text class="mall-collection-title">一座城市，多种灵感生活</text><text class="mall-collection-sub">聚合查看不同商场的活动、权益与到店服务</text>
+          <view class="mall-collection-summary"><view><text>3</text><text>特色商场</text></view><view><text>19</text><text>本月活动</text></view><view><text>38</text><text>会员权益</text></view></view>
+        </view>
+        <view class="mall-collection-heading"><view><text class="section-title">发现商场</text><text class="section-en">每个空间，都有自己的城市表达</text></view><text>{{malls.length}} 个商场</text></view>
+        <view wx:for="{{malls}}" wx:key="name" wx:for-item="mall" class="mall-showcase-card mall-showcase-{{mall.tone}} {{mall.name === selectedMallDetail ? 'mall-showcase-focus' : ''}}">
+          <view class="mall-showcase-visual"><image src="{{mall.image}}" mode="aspectFill" /><view class="mall-showcase-shade"></view><view class="mall-showcase-top"><text>{{mall.eyebrow}}</text><text wx:if="{{mall.name === mallName}}">当前商场</text></view><view class="mall-showcase-copy"><view class="mall-showcase-mark">{{mall.initial}}</view><view><text>{{mall.name}}</text><text>{{mall.location}} · {{mall.distance}}</text></view></view></view>
+          <view class="mall-showcase-body">
+            <view class="mall-showcase-meta"><text>今日营业 {{mall.hours}}</text><view><text wx:for="{{mall.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text></view></view>
+            <view class="mall-showcase-stats"><view wx:for="{{mall.stats}}" wx:key="label" wx:for-item="stat"><text>{{stat.value}}</text><text>{{stat.label}}</text></view></view>
+            <view class="mall-showcase-event tap-target" hover-class="tap-press" data-target="activityList" bindtap="navigate"><view class="mall-showcase-event-icon">活</view><view><text>{{mall.eventTitle}}</text><text>{{mall.eventNote}}</text></view><text>›</text></view>
+            <view class="mall-showcase-links"><view class="tap-target" hover-class="tap-press" data-target="coupons" bindtap="navigate"><text>券</text><view><text>会员权益</text><text>{{mall.benefit}}</text></view></view><view class="tap-target" hover-class="tap-press" data-target="service" bindtap="navigate"><text>服</text><view><text>到店服务</text><text>{{mall.service}}</text></view></view></view>
+            <view class="mall-showcase-actions"><view class="mall-outline-action tap-target" hover-class="tap-press" data-target="guide" bindtap="navigate">查看导览</view><view class="mall-primary-action tap-target" hover-class="tap-press" data-mall="{{mall.name}}" bindtap="enterMallFromCollection">{{mall.name === mallName ? '进入当前首页' : '切换并进入'}}</view></view>
+          </view>
+        </view>
+        <view class="mall-collection-end"><text></text><text>更多城市空间持续加入</text><text></text></view>
+      </view>
+    </block>
+
+    <!-- 2 登录入会 -->
+    <block wx:if="{{currentView === 'login'}}">
+      <view class="content login-page">
+        <view class="login-visual">
+          <image class="material-image" src="/assets/images/pop-home/mall-guide.jpg" mode="aspectFill" />
+          <view class="floating-card"><text class="floating-card-logo">艺享</text><text>MEMBER</text></view>
+        </view>
+        <text class="display-title">欢迎加入会员</text>
+        <text class="display-sub">登录后享受积分、礼遇与专属服务</text>
+        <button class="primary-button" hover-class="button-press" bindtap="loginSuccess">微信手机号快捷登录</button>
+        <button class="secondary-button" hover-class="button-press" bindtap="loginSuccess">其他手机号登录</button>
+        <view class="agreement tap-target" hover-class="tap-press" bindtap="toggleAgreement"><view class="check-dot {{agreementChecked ? 'checked' : ''}}">{{agreementChecked ? '✓' : ''}}</view><text>我已阅读并同意《会员服务协议》和《隐私政策》</text></view>
+        <view class="muted-link tap-target" hover-class="tap-press" data-target="home" bindtap="switchBottom">暂不登录，先逛逛 ›</view>
+      </view>
+    </block>
+
+    <!-- 3 会员卡 -->
+    <block wx:if="{{currentView === 'card'}}">
+      <view class="content">
+        <view class="membership-card membership-card-{{homeConfig.memberTheme}} elevated-card">
+          <image class="membership-card-art" src="{{homeConfig.heroImage}}" mode="aspectFill" />
+          <view class="membership-card-shade"></view>
+          <text class="membership-logo">{{homeConfig.memberEnglish}}</text>
+          <text class="membership-level"><text class="member-name-key">{{homeConfig.memberName}}</text><text class="member-name-suffix">会员</text></text>
+          <text class="membership-id">会员编号 8888 6688</text>
+        </view>
+        <view class="qr-panel soft-card">
+          <text class="panel-title center">会员码</text>
+          <view class="qr-code"><view wx:for="{{qrCells}}" wx:key="index" class="qr-cell {{item ? 'qr-dark' : ''}}"></view></view>
+          <text class="microcopy">动态会员码，每60秒自动更新</text>
+        </view>
+        <view class="stats-card soft-card">
+          <view class="stat"><text class="stat-label">艺享积分</text><text class="stat-value">{{points}}</text></view>
+          <view class="stat-divider"></view>
+          <view class="stat"><text class="stat-label">成长值</text><text class="stat-value">8,600</text></view>
+        </view>
+        <view class="dual-actions">
+          <view class="outline-action tap-target" hover-class="tap-press" data-target="points" bindtap="navigate">积分明细 ›</view>
+          <view class="outline-action tap-target" hover-class="tap-press" data-target="growth" bindtap="navigate">会员成长 ›</view>
+        </view>
+        <text class="section-title compact-title">本月专属礼遇</text>
+        <view class="mini-benefit-row">
+          <view class="mini-benefit tap-target {{coffeeBenefitClaimed ? 'benefit-claimed' : ''}}" hover-class="tap-press" bindtap="claimCoffeeBenefit"><text class="mini-benefit-icon">{{coffeeBenefitClaimed ? '✓' : '咖'}}</text><view><text>咖啡礼遇</text><text class="mini-caption">{{coffeeBenefitClaimed ? '已领取 · 查看卡包' : '指定品牌买一赠一'}}</text></view></view>
+          <view class="mini-benefit tap-target" hover-class="tap-press" data-target="points" bindtap="navigate"><text class="mini-benefit-icon">倍</text><view><text>双倍积分日</text><text class="mini-caption">每周五积分双倍</text></view></view>
+        </view>
+        <view class="member-exclusive wide-benefit soft-card tap-target" hover-class="tap-press" data-target="coupons" bindtap="navigate">
+          <view><text class="eyebrow dark-eyebrow">{{homeConfig.memberName}}专享</text><text class="benefit-title">会员专属双倍积分日</text><text class="benefit-sub">每周五到店消费享双倍积分</text></view>
+          <view class="benefit-orb">2×</view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 4 会员成长 -->
+    <block wx:if="{{currentView === 'growth'}}">
+      <view class="content">
+        <view class="growth-hero member-theme-{{homeConfig.memberTheme}} elevated-card"><view><text class="member-name"><text class="member-name-key">{{homeConfig.memberName}}</text><text class="member-name-suffix">会员</text></text><text class="growth-value">成长值 8,600</text></view><view class="member-mark large"><text>{{homeConfig.memberMark}}</text></view></view>
+        <view class="level-card soft-card">
+          <view class="level-line"></view>
+          <view class="level-row">
+            <view wx:for="{{homeConfig.memberRoadmap}}" wx:key="name" class="level-node {{item.active ? 'active' : ''}}"><view class="node"></view><text>{{item.name}}</text><text>{{item.value}}</text></view>
+          </view>
+          <text class="level-tip">距{{homeConfig.memberNextLevel}}还差 <text class="gold-number">6,400</text> 成长值</text>
+        </view>
+        <text class="section-title compact-title">升级礼遇</text>
+        <view class="upgrade-banner tap-target" hover-class="tap-press" data-target="activity" bindtap="navigate"><view><text>探索更多艺术体验</text><text class="mini-caption light">升级解锁更高等级礼遇</text></view><text class="white-link">查看权益 ›</text></view>
+        <text class="section-title compact-title">本等级权益</text>
+        <view class="benefit-grid soft-card">
+          <view class="benefit-cell tap-target" hover-class="tap-press" data-detail="birthday" bindtap="openInfoDetail"><view class="circle-icon small">倍</view><text>生日双倍积分</text></view>
+          <view class="benefit-cell tap-target" hover-class="tap-press" data-target="parking" bindtap="navigate"><view class="circle-icon small">停</view><text>停车减免2小时</text></view>
+          <view class="benefit-cell tap-target" hover-class="tap-press" data-target="activity" bindtap="navigate"><view class="circle-icon small">先</view><text>活动优先报名</text></view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 5 积分中心 -->
+    <block wx:if="{{currentView === 'points'}}">
+      <view class="content">
+        <view class="points-hero elevated-card">
+          <view class="points-wallet-top">
+            <view class="points-wallet-identity"><view class="points-wallet-mark">积</view><view><text class="points-wallet-title">我的积分账户</text><text class="points-wallet-en">MEMBER POINTS</text></view></view>
+            <text class="points-wallet-status">账户正常</text>
+          </view>
+          <view class="points-balance"><text class="points-balance-label">可用积分</text><view class="points-balance-line"><text class="points-big">{{points}}</text><text class="points-unit">分</text></view></view>
+          <view class="points-sub-row">
+            <view class="points-metric"><text class="points-metric-label">即将过期</text><view><text class="points-metric-value">800</text><text class="points-metric-unit">分</text></view><text class="points-metric-hint">2026.12.31 前使用</text></view>
+            <view class="points-stat-divider"></view>
+            <view class="points-metric"><text class="points-metric-label">约可抵扣</text><view><text class="points-metric-value">¥{{pointCash}}</text><text class="points-metric-unit">元</text></view><text class="points-metric-hint">100积分约抵 ¥1</text></view>
+          </view>
+        </view>
+        <view class="dual-actions"><view class="large-action tap-target" hover-class="tap-press" data-target="mall" bindtap="navigate"><text class="action-icon">礼</text>积分兑换</view><view class="large-action tap-target" hover-class="tap-press" data-target="parking" bindtap="navigate"><text class="action-icon">抵</text>积分抵现</view></view>
+        <view class="receipt-entry soft-card tap-target" hover-class="tap-press" data-target="receipt" bindtap="navigate"><view class="receipt-entry-icon">扫</view><view><text class="result-title">扫码小票赚积分</text><text class="mini-caption">拍摄或从相册上传消费小票</text></view><text class="gold-arrow">›</text></view>
+        <view class="tab-row"><view class="tab {{pointsTab === '明细' ? 'active' : ''}} tap-target" hover-class="tap-press" data-tab="明细" bindtap="setPointsTab">积分明细</view><view class="tab {{pointsTab === '规则' ? 'active' : ''}} tap-target" hover-class="tap-press" data-tab="规则" bindtap="setPointsTab">积分规则</view></view>
+        <view wx:if="{{pointsTab === '明细'}}" class="transaction-list soft-card">
+          <view wx:for="{{transactions}}" wx:key="title" class="transaction tap-target" hover-class="tap-press" data-detail="transaction" data-index="{{index}}" bindtap="openInfoDetail"><view class="transaction-icon">{{item.icon}}</view><view class="transaction-main"><text>{{item.title}}</text><text class="mini-caption">{{item.date}}</text></view><text class="transaction-value {{item.positive ? 'positive' : ''}}">{{item.value}}</text></view>
+        </view>
+        <view wx:else class="points-rules-card soft-card"><view><text>消费积分</text><text>每消费1元积1分</text></view><view><text>积分抵扣</text><text>100积分约抵1元</text></view><view><text>积分有效期</text><text>到账次年12月31日</text></view><button class="secondary-button compact" data-detail="pointsRules" bindtap="openInfoDetail">查看完整积分规则</button></view>
+      </view>
+    </block>
+
+    <!-- 6 卡券权益 -->
+    <block wx:if="{{currentView === 'coupons'}}">
+      <view class="content">
+        <view class="coupon-wallet-head"><view><text class="display-title">卡券与权益</text><text class="display-sub">领取后进入卡包，使用时出示券码</text></view><view class="wallet-mark">券</view></view>
+        <view class="summary-chips"><view><text>可领取</text><text class="chip-number">{{availableCouponCount}}</text></view><view><text>我的卡券</text><text class="chip-number">{{ownedCouponCount}}</text></view><view><text>即将过期</text><text class="chip-number">1</text></view></view>
+        <view class="tab-row three-tabs"><view wx:for="{{['可领取','我的卡券','会员权益']}}" wx:key="*this" class="tab {{couponTab === item ? 'active' : ''}} tap-target" hover-class="tap-press" data-tab="{{item}}" bindtap="setCouponTab">{{item}}</view></view>
+        <block wx:if="{{couponTab === '可领取'}}">
+          <view class="coupon-section-tip"><text>领取中心</text><text>以下卡券尚未进入你的卡包</text></view>
+          <view wx:for="{{availableCoupons}}" wx:key="id" class="coupon-card available-card tap-target" hover-class="tap-press" data-source="available" data-index="{{index}}" bindtap="openCoupon"><image class="coupon-art" src="{{item.image}}" mode="aspectFill" /><view class="coupon-copy"><text class="coupon-title">{{item.title}}</text><text class="coupon-note">{{item.note}}</text><view><text class="coupon-method">{{item.method}}</text><text class="stock-label">库存{{item.stock}}</text></view></view><view class="coupon-button">{{item.cta}}</view></view>
+          <view wx:if="{{availableCouponCount === 0}}" class="empty-state"><view class="empty-orb">✓</view><text class="empty-title">本期卡券已全部领取</text><text>新礼遇上架后会展示在这里</text></view>
+        </block>
+        <block wx:elif="{{couponTab === '我的卡券'}}">
+          <view class="wallet-filter-row"><text class="tap-target {{couponWalletFilter === '可使用' ? 'active' : ''}}" data-filter="可使用" bindtap="setCouponWalletFilter">可使用 {{ownedCouponCount}}</text><text class="tap-target {{couponWalletFilter === '已使用' ? 'active' : ''}}" hover-class="tap-press" data-filter="已使用" bindtap="setCouponWalletFilter">已使用 {{usedCoupons.length}}</text><text class="tap-target {{couponWalletFilter === '已过期' ? 'active' : ''}}" hover-class="tap-press" data-filter="已过期" bindtap="setCouponWalletFilter">已过期 {{expiredCoupons.length}}</text></view>
+          <block wx:if="{{couponWalletFilter === '可使用'}}"><view wx:for="{{ownedCoupons}}" wx:key="id" class="coupon-card owned-card tap-target" hover-class="tap-press" data-source="owned" data-index="{{index}}" bindtap="openCoupon"><image class="coupon-art" src="{{item.image}}" mode="aspectFill" /><view class="coupon-copy"><text class="coupon-title">{{item.title}}</text><text class="coupon-note">{{item.note}}</text><text class="status {{item.statusLabel === '可使用' ? '' : 'urgent'}}">{{item.statusLabel}}</text></view><view class="coupon-button use-button">立即使用</view></view></block>
+          <block wx:elif="{{couponWalletFilter === '已使用'}}"><view wx:for="{{usedCoupons}}" wx:key="id" class="coupon-card archived-card"><image class="coupon-art" src="{{item.image}}" mode="aspectFill" /><view class="coupon-copy"><text class="coupon-title">{{item.title}}</text><text class="coupon-note">{{item.note}}</text><text class="status">已使用</text></view><view class="archive-state">已核销</view></view></block>
+          <block wx:else><view wx:for="{{expiredCoupons}}" wx:key="id" class="coupon-card archived-card"><image class="coupon-art" src="{{item.image}}" mode="aspectFill" /><view class="coupon-copy"><text class="coupon-title">{{item.title}}</text><text class="coupon-note">{{item.note}}</text><text class="status urgent">已过期</text></view><view class="archive-state">不可用</view></view></block>
+        </block>
+        <block wx:else><view class="empty-state"><view class="empty-orb">权</view><text class="empty-title">8项会员权益待体验</text><text>停车减免、双倍积分、活动优先报名等</text><button class="primary-button compact" hover-class="button-press" data-target="growth" bindtap="navigate">查看会员成长</button></view></block>
+      </view>
+    </block>
+
+    <!-- 7 AI小票积分 -->
+    <block wx:if="{{currentView === 'receipt'}}">
+      <view class="content receipt-page">
+        <text class="display-title center">拍照上传消费小票</text><text class="display-sub center">上传有效消费小票，获取消费积分</text>
+        <view class="camera-frame {{scanning ? 'scanning' : ''}}">
+          <view class="corner c1"></view><view class="corner c2"></view><view class="corner c3"></view><view class="corner c4"></view>
+          <view class="receipt-paper"><text class="receipt-logo">消费凭证</text><view class="receipt-line long"></view><view class="receipt-line"></view><view class="receipt-line"></view><text class="receipt-total">合计 ¥658.00</text><view class="receipt-line long"></view></view>
+          <view class="scan-line"></view>
+        </view>
+        <view class="guide-chips"><text>✓ 商场名称清晰</text><text>✓ 消费金额完整</text><text>✓ 消费时间可见</text></view>
+        <view class="tip-card"><text class="tip-icon">灯</text><view><text>请将小票平铺拍摄，避免反光与遮挡</text><text class="mini-caption">仅支持在有效期内消费的小票</text></view></view>
+        <button class="primary-button" hover-class="button-press" bindtap="startScan">{{scanning ? '识别中…' : '拍摄小票'}}</button>
+        <button class="secondary-button" hover-class="button-press" bindtap="startScan">从相册选择</button>
+        <view class="muted-link tap-target" hover-class="tap-press" data-target="points" bindtap="navigate">查看积分记录 ›</view>
+      </view>
+    </block>
+
+    <!-- 8 小票结果 -->
+    <block wx:if="{{currentView === 'receiptResult'}}">
+      <view class="content result-page">
+        <view class="success-orb">✓</view><text class="display-title center">小票识别成功</text><text class="score-pill">预计获得 +120 积分</text>
+        <view class="result-card soft-card"><view><text>商场名称</text><text>海境艺术中心</text></view><view><text>消费门店</text><text>艺术书廊</text></view><view><text>消费金额</text><text>¥658.00</text></view><view><text>消费时间</text><text>2026-07-18 14:32</text></view></view>
+        <view class="timeline-card soft-card"><view class="timeline-line"></view><view class="timeline-node done"><view>✓</view><text>已提交</text></view><view class="timeline-node current"><view>•••</view><text>系统审核中</text></view><view class="timeline-node"><view></view><text>积分到账</text></view></view>
+        <text class="microcopy center">预计24小时内完成审核</text>
+        <button class="primary-button" hover-class="button-press" bindtap="confirmReceipt">确认提交</button>
+        <button class="secondary-button" hover-class="button-press" data-target="receipt" bindtap="navigate">重新拍摄</button>
+        <view class="muted-link tap-target" hover-class="tap-press" data-target="points" bindtap="navigate">积分记录 ›</view>
+      </view>
+    </block>
+
+    <!-- 9 全局搜索 -->
+    <block wx:if="{{currentView === 'search'}}">
+      <view class="content search-page">
+        <view class="search-box"><text>⌕</text><input value="{{searchValue}}" bindinput="onSearchInput" placeholder="搜索品牌、活动或服务"/><text class="clear tap-target" hover-class="tap-press" data-value="" bindtap="setSearch">×</text></view>
+        <text class="section-title compact-title">热门搜索</text>
+        <view class="hot-chips"><text wx:for="{{['停车缴费','亲子活动','餐饮优惠','会员礼遇']}}" wx:key="*this" class="hot-chip tap-target" hover-class="tap-press" data-value="{{item}}" bindtap="setSearch">{{item}}</text></view>
+        <view class="tab-row four-tabs"><view wx:for="{{['全部','店铺','活动','服务']}}" wx:key="*this" class="tab tap-target {{searchFilter === item ? 'active' : ''}}" data-filter="{{item}}" bindtap="setSearchFilter">{{item}}</view></view>
+        <view wx:if="{{searchFilter === '全部' || searchFilter === '活动'}}" class="search-result tap-target" hover-class="tap-press" data-target="activity" bindtap="navigate"><image class="result-thumb" src="/assets/images/pop-home/art-festival.jpg" mode="aspectFill" /><view class="result-copy"><text class="result-type">活动</text><text class="result-title">海滨当代艺术展</text><text class="mini-caption">艺术空间 · 报名中</text></view><text>›</text></view>
+        <view wx:if="{{searchFilter === '全部' || searchFilter === '店铺'}}" class="search-result tap-target" hover-class="tap-press" data-target="store" bindtap="navigate"><image class="result-thumb" src="/assets/images/pop-home/art-bookshop.jpg" mode="aspectFill" /><view class="result-copy"><text class="result-type">店铺</text><text class="result-title">艺术书廊</text><text class="mini-caption">L1-128 · 营业中</text></view><text>›</text></view>
+        <view wx:if="{{searchFilter === '全部' || searchFilter === '服务'}}" class="search-result tap-target" hover-class="tap-press" data-target="guide" bindtap="navigate"><image class="result-thumb" src="/assets/images/pop-home/mall-guide.jpg" mode="aspectFill" /><view class="result-copy"><text class="result-type">服务</text><text class="result-title">艺术展馆导览</text><text class="mini-caption">全馆可用 · 每日三场</text></view><text>›</text></view>
+        <text class="section-title compact-title">搜索历史</text><view class="history-row"><text>艺术展览</text><text>艺术书廊</text><text>停车</text></view>
+      </view>
+    </block>
+
+    <!-- 10 楼层导览 -->
+    <block wx:if="{{currentView === 'guide'}}">
+      <view class="content guide-page">
+        <view class="mall-select tap-target" hover-class="tap-press" bindtap="openMallSheet">{{mallName}}⌄</view>
+        <view class="search-box tap-target" hover-class="tap-press" data-target="search" bindtap="navigate"><text>⌕</text><text class="search-placeholder">搜索品牌、店铺或设施</text></view>
+        <view class="map-card">
+          <image class="guide-map-image" src="/assets/images/pop-home/floor-guide-colorful.jpg" mode="aspectFill" />
+          <view class="guide-map-shade"></view><view class="map-center">艺术中庭</view>
+          <view class="store-block b1 tap-target" hover-class="tap-press" data-target="store" bindtap="navigate">艺术书廊</view><view class="store-block b2">精品咖啡</view><view class="store-block b3">设计集合</view><view class="store-block b4">亲子空间</view><view class="store-block b5">生活美学</view><view class="store-block b6">海景餐厅</view>
+          <view wx:if="{{facilityFilter === '全部' || facilityFilter === '洗手间'}}" class="facility-pin p1">厕</view><view wx:if="{{facilityFilter === '全部' || facilityFilter === '电梯'}}" class="facility-pin p2">梯</view><view wx:if="{{facilityFilter === '全部' || facilityFilter === '母婴室'}}" class="facility-pin p3">母</view><view wx:if="{{facilityFilter === '无障碍'}}" class="facility-pin p3">无</view>
+          <view class="floor-selector"><view wx:for="{{['L3','L2','L1','B1']}}" wx:key="*this" class="floor-item {{floor === item ? 'active' : ''}} tap-target" hover-class="tap-press" data-floor="{{item}}" bindtap="setFloor">{{item}}</view></view>
+          <view class="guide-toolbar">
+            <view class="guide-tool tap-target {{guideMode === '定位' ? 'active' : ''}}" hover-class="tap-press" data-mode="定位" bindtap="setGuideMode"><text class="guide-tool-icon">⌖</text><text>定位</text></view>
+            <view class="guide-tool tap-target {{guideMode === '路线' ? 'active' : ''}}" hover-class="tap-press" data-mode="路线" bindtap="setGuideMode"><text class="guide-tool-icon">↝</text><text>路线</text></view>
+            <view class="guide-tool tap-target {{guideMode === '设施' ? 'active' : ''}}" hover-class="tap-press" data-mode="设施" bindtap="setGuideMode"><text class="guide-tool-icon">◇</text><text>设施</text></view>
+            <view class="guide-tool tap-target" hover-class="tap-press" data-mode="重置" bindtap="setGuideMode"><text class="guide-tool-icon">↻</text><text>重置</text></view>
+          </view>
+        </view>
+        <view class="facility-row"><view class="facility tap-target {{facilityFilter === '洗手间' ? 'active' : ''}}" hover-class="tap-press" data-facility="洗手间" bindtap="setFacilityFilter">厕<text>洗手间</text></view><view class="facility tap-target {{facilityFilter === '母婴室' ? 'active' : ''}}" hover-class="tap-press" data-facility="母婴室" bindtap="setFacilityFilter">母<text>母婴室</text></view><view class="facility tap-target {{facilityFilter === '电梯' ? 'active' : ''}}" hover-class="tap-press" data-facility="电梯" bindtap="setFacilityFilter">梯<text>电梯</text></view><view class="facility tap-target {{facilityFilter === '无障碍' ? 'active' : ''}}" hover-class="tap-press" data-facility="无障碍" bindtap="setFacilityFilter">无<text>无障碍</text></view></view>
+        <view class="location-row"><view><text class="mini-caption">{{guideMode === '路线' ? '路线规划中' : (facilityFilter !== '全部' ? '已筛选 ' + facilityFilter : '当前位置')}}</text><text class="result-title">{{floor}} 艺术中庭</text></view><view class="find-car tap-target" hover-class="tap-press" data-target="parking" bindtap="navigate">寻车</view></view>
+      </view>
+    </block>
+
+    <!-- 11 店铺详情 -->
+    <block wx:if="{{currentView === 'store'}}">
+      <view class="store-hero hero-art"><image class="material-image" src="/assets/images/pop-home/art-bookshop.jpg" mode="aspectFill" /></view>
+      <view class="content store-content">
+        <text class="display-title">艺术书廊</text><view class="tag-row"><text>文化艺术</text><text>会员积分</text><text>L1-128</text></view>
+        <view class="info-list"><view><text>营业时间</text><text>10:00–22:00 ›</text></view><view><text>联系电话</text><text>0755-8888 6688 ›</text></view></view>
+        <text class="store-desc">汇集艺术出版、设计好物与限定展览</text>
+        <view class="offer-panel soft-card"><text class="panel-title">当前优惠</text><view class="offer-ticket"><text>消费满200减50</text><view class="small-gold-button tap-target" hover-class="tap-press" bindtap="claimStoreOffer">{{storeOfferClaimed ? '查看卡包' : '立即领取'}}</view></view></view>
+        <view class="member-offer tap-target" hover-class="tap-press" data-target="growth" bindtap="navigate"><text>会员可享 双倍积分</text><text>›</text></view>
+        <view class="sticky-dual"><button class="secondary-button" hover-class="button-press" bindtap="callStore">电话咨询</button><button class="primary-button" hover-class="button-press" data-target="guide" bindtap="navigate">导航到店</button></view>
+      </view>
+    </block>
+
+    <!-- 12 停车缴费 -->
+    <block wx:if="{{currentView === 'parking'}}">
+      <view class="content parking-page">
+        <view class="plate-card soft-card tap-target" hover-class="tap-press" bindtap="chooseParkingPlate"><text class="stat-label">车牌号</text><text class="plate">{{selectedParkingPlate}}</text><text>⌄</text></view>
+        <view class="parking-record soft-card"><text class="result-title">{{mallName}} 地下停车场</text><view class="parking-times"><view><text class="mini-caption">入场时间</text><text>12:18</text></view><view><text class="mini-caption">已停</text><text>3小时26分</text></view></view></view>
+        <view class="fee-card soft-card"><view><text>停车费</text><text>¥36.00</text></view><view><text>{{homeConfig.memberName}}免费2小时</text><text class="discount">-¥20.00</text></view><view><text>停车券</text><text class="discount">-¥10.00</text></view><view class="payable"><text>{{parkingPaid ? '支付状态' : '应付'}}</text><text>{{parkingPaid ? '已支付' : '¥6.00'}}</text></view></view>
+        <view class="payment-row soft-card tap-target" hover-class="tap-press" bindtap="chooseParkingPayment"><view class="wechat-dot">{{parkingPayment === '微信支付' ? '微' : '店'}}</view><text>{{parkingPayment}}</text><text>切换 ›</text></view>
+        <button class="primary-button" hover-class="button-press" bindtap="payParking">{{parkingPaid ? '支付完成' : '确认支付 ¥6.00'}}</button>
+        <view class="bottom-links"><view class="tap-target" hover-class="tap-press" data-target="parkingRecords" bindtap="navigate">停车记录</view><view class="tap-target" hover-class="tap-press" data-target="invoice" bindtap="navigate">申请开票</view></view>
+      </view>
+    </block>
+
+    <!-- 内容精选 -->
+    <block wx:if="{{currentView === 'contentCenter'}}">
+      <view class="content content-center-page">
+        <view class="content-center-head"><view><text class="eyebrow">EDITORIAL PICKS</text><text class="display-title">内容精选</text><text class="display-sub">根据 {{mallName}} 与{{homeConfig.memberLabel}}偏好推荐</text></view><view class="content-persona">{{homeConfig.memberMark}}<text>会员推荐</text></view></view>
+        <view class="content-featured tap-target" hover-class="tap-press" data-id="{{featuredContent.id}}" bindtap="openContent">
+          <image src="{{featuredContent.image}}" mode="aspectFill" /><view class="content-featured-shade"></view>
+          <view class="content-featured-copy"><view><text>{{featuredContent.category}}</text><text>{{featuredContent.recommend}}</text></view><text>{{featuredContent.title}}</text><text>{{featuredContent.subtitle}}</text><view><text>{{featuredContent.publish}}</text><text>阅读全文 ›</text></view></view>
+        </view>
+        <scroll-view class="content-filter-scroll" scroll-x enable-flex show-scrollbar="false"><view wx:for="{{contentFilters}}" wx:key="*this" class="content-filter {{contentFilter === item ? 'active' : ''}} tap-target" hover-class="tap-press" data-filter="{{item}}" bindtap="setContentFilter">{{item}}</view></scroll-view>
+        <view class="content-card-list">
+          <view wx:for="{{visibleContents}}" wx:key="id" class="content-list-card tap-target" hover-class="tap-press" data-id="{{item.id}}" bindtap="openContent">
+            <image src="{{item.image}}" mode="aspectFill" />
+            <view class="content-list-copy"><view><text class="content-category">{{item.category}}</text><text class="content-recommend">{{item.recommend}}</text></view><text class="content-list-title">{{item.title}}</text><text class="content-list-subtitle">{{item.subtitle}}</text><view class="content-list-meta"><text>{{item.audience}}</text><text>{{item.readTime}}</text></view></view>
+          </view>
+          <view wx:if="{{visibleContents.length === 0}}" class="content-empty"><text>此分类内容正在准备中</text><text>切换其他分类继续浏览</text></view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 通用内容详情 -->
+    <block wx:if="{{currentView === 'contentDetail'}}">
+      <view class="content-detail-page">
+        <view class="content-detail-hero"><image src="{{selectedContent.image}}" mode="aspectFill" /><view></view><text>{{selectedContent.category}}</text></view>
+        <view class="content content-article">
+          <view class="content-article-meta"><text>{{selectedContent.publish}}</text><text>{{selectedContent.readTime}}</text></view>
+          <text class="content-article-title">{{selectedContent.title}}</text>
+          <text class="content-article-subtitle">{{selectedContent.subtitle}}</text>
+          <view class="content-match-card"><view>荐</view><view><text>为什么推荐给你</text><text>{{selectedContent.audience}} · {{selectedContent.recommend}}</text></view></view>
+          <text class="content-article-intro">{{selectedContent.intro}}</text>
+          <view wx:for="{{selectedContent.sections}}" wx:key="title" class="content-article-section"><text>{{item.title}}</text><text>{{item.text}}</text></view>
+          <view class="content-conversion-head"><text>边看边逛</text><text>与本篇内容关联</text></view>
+          <view class="content-related-list">
+            <view wx:for="{{selectedContent.related}}" wx:key="title" class="content-related-card tap-target" hover-class="tap-press" data-target="{{item.target}}" bindtap="navigate"><view class="content-related-icon">{{item.icon}}</view><view><text>{{item.type}} · {{item.title}}</text><text>{{item.caption}}</text></view><view><text>{{item.action}}</text><text>›</text></view></view>
+          </view>
+          <view class="content-chain"><text>内容灵感</text><text>→</text><text>关联权益</text><text>→</text><text>到店体验</text></view>
+          <button class="primary-button" hover-class="button-press" data-target="{{selectedContent.primaryTarget}}" bindtap="navigate">{{selectedContent.primaryAction}}</button>
+          <button class="share-link" open-type="share" hover-class="button-press">分享这篇内容</button>
+        </view>
+      </view>
+    </block>
+
+    <!-- 13 活动列表 -->
+    <block wx:if="{{currentView === 'activityList'}}">
+      <view class="content activity-list-page">
+        <view class="activity-list-head">
+          <text class="eyebrow">ART · LIFE</text>
+          <text class="display-title">发现正在发生</text>
+          <text class="display-sub">展览、演出与会员限定体验，在这里慢慢相遇</text>
+          <view class="activity-overview"><text>{{activities.length}} 场精选活动</text><text>·</text><text>会员优先参与</text></view>
+        </view>
+        <scroll-view class="activity-filter-scroll" scroll-x enable-flex show-scrollbar="false">
+          <view wx:for="{{activityFilters}}" wx:key="*this" class="activity-filter {{activityFilter === item ? 'active' : ''}} tap-target" hover-class="tap-press" data-filter="{{item}}" bindtap="setActivityFilter">{{item}}</view>
+        </scroll-view>
+        <view class="activity-list">
+          <view wx:for="{{visibleActivities}}" wx:key="id" class="activity-list-card {{index === 0 && activityFilter === '全部' ? 'featured' : ''}} tap-target" hover-class="tap-press" data-id="{{item.id}}" bindtap="openActivity">
+            <view class="activity-card-media"><image src="{{item.image}}" mode="aspectFill" /><view class="activity-card-shade"></view><text class="activity-type">{{item.type}}</text><text wx:if="{{item.memberOnly}}" class="activity-member-tag">会员专享</text></view>
+            <view class="activity-card-copy">
+              <view class="activity-card-meta"><text>{{item.date}}</text><text class="activity-status status-tone-{{item.tone}}">{{item.status}}</text></view>
+              <text class="activity-card-title">{{item.title}}</text>
+              <text class="activity-card-subtitle">{{item.subtitle}}</text>
+              <view class="activity-card-foot"><text>{{mallName}} · {{item.location}}</text><text>查看详情 ›</text></view>
+            </view>
+          </view>
+        </view>
+        <view class="activity-list-end"><text></text><text>更多灵感活动持续更新</text><text></text></view>
+      </view>
+    </block>
+
+    <!-- 14 活动详情 -->
+    <block wx:if="{{currentView === 'activity'}}">
+      <view class="activity-hero hero-art"><image class="material-image" src="{{selectedActivity.image}}" mode="aspectFill" /></view>
+      <view class="content activity-content">
+        <text class="display-title">{{selectedActivity.title}}</text><view class="activity-meta"><text>{{selectedActivity.date}}</text><text>{{mallName}} {{selectedActivity.location}}</text><text class="status">{{activityJoined ? '已报名' : selectedActivity.status}}</text></view>
+        <text class="section-title compact-title">活动介绍</text><text class="activity-desc">{{selectedActivity.description}}</text>
+        <view class="member-offer"><text>{{selectedActivity.offer}}</text><text>冠</text></view>
+        <block wx:if="{{selectedActivity.dates.length > 0}}"><text class="section-title compact-title">选择参与日期</text><view class="date-row"><view wx:for="{{selectedActivity.dates}}" wx:key="*this" class="date-chip {{selectedDate === item ? 'active' : ''}} tap-target" hover-class="tap-press" data-date="{{item}}" bindtap="chooseDate">{{item}}</view></view></block>
+        <button class="primary-button" hover-class="button-press" bindtap="joinActivity">{{activityJoined ? '查看报名凭证' : (selectedActivity.status === '即将开始' && activityReminder ? '关闭活动提醒' : selectedActivity.action)}}</button>
+        <button class="share-link" open-type="share" hover-class="button-press">分享活动</button>
+      </view>
+    </block>
+
+    <!-- 15 积分商城 -->
+    <block wx:if="{{currentView === 'mall'}}">
+      <view class="content mall-page">
+        <view class="mall-top"><text class="display-title">积分商城</text><view class="mall-top-actions"><view class="points-pill">我的积分 {{points}}</view><view class="cart-pill tap-target" hover-class="tap-press" data-target="cart" bindtap="navigate">购物车<text>{{cartCount}}</text></view></view></view>
+        <view class="mall-banner"><image class="material-image" src="/assets/images/pop-home/mall-guide.jpg" mode="aspectFill" /><text>夏日精选兑换</text><text class="mini-caption light">艺术生活 · 品质之选</text></view>
+        <view class="commerce-inner-entry-row">
+          <view class="commerce-inner-entry group tap-target" hover-class="tap-press" data-target="groupBuy" bindtap="navigate"><view><text>团</text></view><view><text>到店团购</text><text>{{homeConfig.commerce.groupBuys.length}}款商户套餐</text></view><text>›</text></view>
+          <view class="commerce-inner-entry shop tap-target" hover-class="tap-press" data-target="onlineShop" bindtap="navigate"><view><text>购</text></view><view><text>在线商城</text><text>{{homeConfig.commerce.shopProducts.length}}款精选好物</text></view><text>›</text></view>
+        </view>
+        <view class="category-row"><view wx:for="{{['好物','美食','停车','卡券']}}" wx:key="*this" class="category {{mallTab === item ? 'active' : ''}} tap-target" hover-class="tap-press" data-tab="{{item}}" bindtap="setMallTab">{{item}}</view></view>
+        <view class="product-grid"><view wx:for="{{products}}" wx:key="name" class="product-card soft-card"><image class="product-art" src="{{item.image}}" mode="aspectFill" /><text class="product-name">{{item.name}}</text><view class="product-bottom"><text class="product-points">{{item.points}}积分</text><view class="product-buttons"><view class="cart-add tap-target" hover-class="tap-press" data-index="{{index}}" bindtap="addToCart">+</view><view class="exchange-button tap-target" hover-class="tap-press" data-index="{{index}}" bindtap="openExchange">兑换</view></view></view></view></view>
+      </view>
+    </block>
+
+    <!-- 团购精选 -->
+    <block wx:if="{{currentView === 'groupBuy'}}">
+      <view class="content commerce-list-page group-list-page">
+        <view class="commerce-list-hero group"><text class="eyebrow">GROUP DEAL</text><text class="display-title">{{mallName}}团购精选</text><text class="display-sub">真实商户套餐 · 开团后邀请好友 · 到店电子码核销</text><view><text>{{homeConfig.commerce.groupBuys.length}}款在售</text><text>低至6折</text><text>过期自动退</text></view></view>
+        <scroll-view class="commerce-filter-row" scroll-x enable-flex show-scrollbar="false"><text class="active">全部</text><text>美食餐饮</text><text>艺术体验</text><text>亲子娱乐</text><text>生活服务</text></scroll-view>
+        <view wx:for="{{homeConfig.commerce.groupBuys}}" wx:key="id" wx:for-item="commerceItem" class="commerce-list-card tap-target" hover-class="tap-press" data-type="group" data-index="{{index}}" bindtap="openCommerceProduct">
+          <image src="{{commerceItem.image}}" mode="aspectFill" /><view class="commerce-list-copy"><view><text class="commerce-badge group">{{commerceItem.badge}}</text><text class="commerce-store">{{commerceItem.store}}</text></view><text class="commerce-list-name">{{commerceItem.name}}</text><text class="commerce-list-spec">{{commerceItem.spec}}</text><view class="commerce-list-meta"><text>{{commerceItem.fulfillment}}</text><text>库存{{commerceItem.stock}}份</text></view><view class="commerce-list-bottom"><view><text>¥</text><text>{{commerceItem.price}}</text><text>¥{{commerceItem.originalPrice}}</text></view><view><text>{{commerceItem.sold}}</text><text>去开团</text></view></view></view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 在线商城 -->
+    <block wx:if="{{currentView === 'onlineShop'}}">
+      <view class="content commerce-list-page online-shop-page">
+        <view class="commerce-list-hero shop"><text class="eyebrow">ONLINE SHOP</text><text class="display-title">{{mallName}}在线商城</text><text class="display-sub">商场与品牌官方供货 · 配送进度可查 · 支持门店自提</text><view><text>{{homeConfig.commerce.shopProducts.length}}款精选</text><text>正品保障</text><text>售后无忧</text></view></view>
+        <scroll-view class="commerce-filter-row" scroll-x enable-flex show-scrollbar="false"><text class="active">推荐</text><text>设计好物</text><text>家居生活</text><text>文创阅读</text><text>食品饮品</text></scroll-view>
+        <view class="online-product-grid"><view wx:for="{{homeConfig.commerce.shopProducts}}" wx:key="id" wx:for-item="commerceItem" class="online-product-card tap-target" hover-class="tap-press" data-type="shop" data-index="{{index}}" bindtap="openCommerceProduct"><view class="online-product-image"><image src="{{commerceItem.image}}" mode="aspectFill" /><text>{{commerceItem.badge}}</text></view><view class="online-product-copy"><text class="commerce-store">{{commerceItem.store}}</text><text class="commerce-list-name">{{commerceItem.name}}</text><text class="commerce-list-spec">{{commerceItem.spec}}</text><view class="online-product-bottom"><view><text>¥</text><text>{{commerceItem.price}}</text><text>¥{{commerceItem.originalPrice}}</text></view><text>{{commerceItem.sold}}</text></view></view></view></view>
+        <view class="commerce-cart-float tap-target" hover-class="tap-press" data-feedback="商城订单中已有 {{commerceCartCount}} 件商品" bindtap="tapFeedback"><text>购</text><text>{{commerceCartCount}}</text></view>
+      </view>
+    </block>
+
+    <!-- 团购与商城商品详情 -->
+    <block wx:if="{{currentView === 'commerceProduct'}}">
+      <view class="commerce-product-page">
+        <view class="commerce-product-visual"><image src="{{selectedCommerceProduct.image}}" mode="aspectFill" /><text class="commerce-badge {{selectedCommerceProduct.type}}">{{selectedCommerceProduct.badge}}</text></view>
+        <view class="content commerce-product-content">
+          <view class="commerce-product-price"><view><text>¥</text><text>{{selectedCommerceProduct.price}}</text><text>¥{{selectedCommerceProduct.originalPrice}}</text></view><text>{{selectedCommerceProduct.sold}}</text></view>
+          <text class="commerce-product-name">{{selectedCommerceProduct.name}}</text><text class="commerce-product-spec">{{selectedCommerceProduct.spec}}</text>
+          <view class="commerce-product-store tap-target" hover-class="tap-press" data-target="store" bindtap="navigate"><view>店</view><view><text>{{selectedCommerceProduct.store}}</text><text>{{mallName}}官方合作商户</text></view><text>进店 ›</text></view>
+          <view class="commerce-product-info soft-card"><view><text>履约方式</text><text>{{selectedCommerceProduct.fulfillment}}</text></view><view><text>当前库存</text><text>{{selectedCommerceProduct.stock}}份</text></view><view><text>购买数量</text><view class="commerce-quantity"><text class="tap-target" hover-class="tap-press" data-delta="-1" bindtap="changeCommerceQuantity">−</text><text>{{commerceQuantity}}</text><text class="tap-target" hover-class="tap-press" data-delta="1" bindtap="changeCommerceQuantity">＋</text></view></view></view>
+          <view class="commerce-product-description"><text>商品说明</text><text>{{selectedCommerceProduct.description}}</text><view><text>官方商户</text><text>价格透明</text><text>{{selectedCommerceProduct.type === 'group' ? '未成团自动退' : '支持售后'}}</text></view></view>
+          <view wx:if="{{commerceOrderStatus}}" class="commerce-order-status"><text>✓</text><view><text>{{selectedCommerceProduct.type === 'group' ? '开团成功' : '已加入订单'}}</text><text>{{commerceOrderStatus}}</text></view></view>
+          <view class="commerce-product-actions"><button class="secondary-button" hover-class="button-press" data-feedback="已收藏该商品" bindtap="tapFeedback">收藏</button><button class="primary-button" hover-class="button-press" bindtap="submitCommerceOrder">{{commerceOrderStatus ? '查看订单状态' : (selectedCommerceProduct.type === 'group' ? '¥' + selectedCommerceProduct.price + ' 立即开团' : '¥' + selectedCommerceProduct.price + ' 加入商城订单')}}</button></view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 16 个人中心 -->
+    <block wx:if="{{currentView === 'profile'}}">
+      <view class="profile-hero pop-profile-hero">
+        <view class="pop-profile-sun"></view><view class="pop-profile-wave"></view><view class="pop-profile-star">★</view>
+        <view class="pop-profile-copy"><text>{{homeConfig.memberEnglish}}</text><text>把灵感装进口袋</text><text>{{homeConfig.memberLabel}}生活提案</text></view>
+        <view class="pop-profile-face"><text>☺</text></view>
+      </view>
+      <view class="content profile-content">
+        <view class="identity-row member-theme-{{homeConfig.memberTheme}}"><view class="pop-profile-avatar">{{homeConfig.memberMark}}</view><view><text class="profile-member-name"><text class="member-name-key">{{homeConfig.memberName}}</text><text class="member-name-suffix">会员</text></text><text class="member-sub">会员编号 8888 6688</text></view></view>
+        <view class="asset-row soft-card"><view class="tap-target" hover-class="tap-press" data-target="points" bindtap="navigate"><text>积分</text><text class="asset-number">{{points}}</text></view><view class="tap-target" hover-class="tap-press" data-target="coupons" data-coupon-tab="我的卡券" bindtap="navigate"><text>卡券</text><text class="asset-number">6</text></view><view class="tap-target" hover-class="tap-press" data-target="coupons" data-coupon-tab="会员权益" bindtap="navigate"><text>权益</text><text class="asset-number">8</text></view></view>
+        <view class="profile-service-panel">
+          <view class="profile-service-head"><view><text>我的服务</text><text>常用功能都在这里</text></view><text>9 GRID</text></view>
+          <view class="profile-service-grid">
+            <view class="tap-target" hover-class="tap-press" data-target="orders" bindtap="navigate"><view class="profile-icon-shell"><image class="profile-icon-image" src="/assets/icons/pop/orders.png" mode="aspectFit" /></view><text>我的订单</text></view>
+            <view class="tap-target" hover-class="tap-press" data-target="coupons" bindtap="navigate"><view class="profile-icon-shell"><image class="profile-icon-image" src="/assets/icons/pop/wallet-coupons.png" mode="aspectFit" /></view><text>我的卡券</text></view>
+            <view class="tap-target" hover-class="tap-press" data-target="points" bindtap="navigate"><view class="profile-icon-shell"><image class="profile-icon-image" src="/assets/icons/pop/points-record.png" mode="aspectFit" /></view><text>积分记录</text></view>
+            <view class="tap-target" hover-class="tap-press" data-target="messages" bindtap="navigate"><view class="profile-icon-shell"><image class="profile-icon-image" src="/assets/icons/pop/messages.png" mode="aspectFit" /></view><text>消息中心</text></view>
+            <view class="tap-target" hover-class="tap-press" data-target="activityList" bindtap="navigate"><view class="profile-icon-shell"><image class="profile-icon-image" src="/assets/icons/pop/activity.png" mode="aspectFit" /></view><text>我的活动</text></view>
+            <view class="tap-target" hover-class="tap-press" data-target="memberProfile" bindtap="navigate"><view class="profile-icon-shell"><image class="profile-icon-image" src="/assets/icons/pop/member-card.png" mode="aspectFit" /></view><text>会员资料</text></view>
+            <view class="tap-target" hover-class="tap-press" data-target="vehicles" bindtap="navigate"><view class="profile-icon-shell"><image class="profile-icon-image" src="/assets/icons/pop/parking.png" mode="aspectFit" /></view><text>车辆管理</text></view>
+            <view class="tap-target" hover-class="tap-press" data-target="merchantManage" bindtap="navigate"><view class="profile-icon-shell"><image class="profile-icon-image" src="/assets/icons/pop/mall.png" mode="aspectFit" /></view><text>商户管理</text></view>
+            <view class="tap-target" hover-class="tap-press" data-target="service" bindtap="navigate"><view class="profile-icon-shell"><image class="profile-icon-image" src="/assets/icons/pop/service.png" mode="aspectFit" /></view><text>会员服务</text></view>
+          </view>
+        </view>
+        <view class="profile-feature-grid"><view class="profile-feature-card invite tap-target" hover-class="tap-press" data-target="inviteActivity" bindtap="navigate"><text>好友同行</text><text>邀请注册 +300积分</text><text>去邀请 →</text></view><view class="profile-feature-card benefit tap-target" hover-class="tap-press" data-target="coupons" bindtap="navigate"><text>本月礼遇</text><text>彩色好礼等你领取</text><text>去看看 →</text></view></view>
+        <view class="profile-commerce-strip"><view class="tap-target" hover-class="tap-press" data-target="groupBuy" bindtap="navigate"><text>团</text><view><text>团购精选</text><text>商户套餐、拼团与到店核销</text></view><text>›</text></view><view class="tap-target" hover-class="tap-press" data-target="onlineShop" bindtap="navigate"><text>购</text><view><text>在线商城</text><text>精选好物与配送订单</text></view><text>›</text></view></view>
+        <view class="profile-setting-entry tap-target" hover-class="tap-press" data-target="settings" bindtap="navigate"><view><text>设置与账户</text><text>通知、隐私与退出登录</text></view><text>⚙</text></view>
+      </view>
+    </block>
+
+    <!-- 卡券详情 -->
+    <block wx:if="{{currentView === 'couponDetail'}}">
+      <view class="content detail-page">
+        <view class="coupon-detail-hero"><image class="material-image" src="{{selectedCoupon.image}}" mode="aspectFill" /><view class="coupon-detail-shade"></view><view><text class="eyebrow">{{selectedCoupon.owned ? '已领取卡券' : '待领取奖赏'}}</text><text class="detail-hero-title">{{selectedCoupon.title}}</text><text>{{selectedCoupon.note}}</text></view></view>
+        <view class="detail-meta soft-card"><view><text class="mini-caption">有效期至</text><text>{{selectedCoupon.expiry}}</text></view><view><text class="mini-caption">{{selectedCoupon.owned ? '券码状态' : '剩余库存'}}</text><text>{{selectedCoupon.owned ? '正常' : selectedCoupon.stock + '份'}}</text></view><view><text class="mini-caption">当前状态</text><text class="status">{{selectedCoupon.owned ? selectedCoupon.statusLabel : '待领取'}}</text></view></view>
+        <block wx:if="{{selectedCoupon.owned}}">
+          <view class="code-panel real-code-panel soft-card">
+            <view class="code-panel-heading"><view><text class="panel-title">到店核销码</text><text class="mini-caption">请向工作人员出示</text></view><text class="live-code-tag">{{codeMode === '动态码' ? '动态更新 00:48' : '离线可用'}}</text></view>
+            <view class="code-tabs"><view wx:for="{{['动态码','静态码']}}" wx:key="*this" class="code-tab {{codeMode === item ? 'active' : ''}} tap-target" hover-class="tap-press" data-mode="{{item}}" bindtap="setCodeMode">{{item}}</view></view>
+            <view class="qr-visual-shell"><view class="qr-code reward-qr real-qr"><view wx:for="{{qrCells}}" wx:key="index" class="qr-cell {{item ? 'qr-dark' : ''}}"></view></view></view>
+            <text class="coupon-code-number">券码 {{selectedCoupon.code}}</text>
+            <text class="microcopy">{{codeMode === '动态码' ? '安全码定时更新，截图后可能失效' : '长效二维码，弱网环境也可出示'}}</text>
+            <button wx:if="{{codeMode === '静态码'}}" class="secondary-button compact" hover-class="button-press" bindtap="saveLongCode">保存长效二维码</button>
+          </view>
+          <view class="record-links soft-card"><view class="tap-target" hover-class="tap-press" data-detail="couponStatus" bindtap="openInfoDetail"><text>卡券状态</text><text>{{selectedCoupon.statusLabel}} ›</text></view><view class="tap-target" hover-class="tap-press" data-detail="couponRules" bindtap="openInfoDetail"><text>使用规则</text><text>查看 ›</text></view><view class="tap-target" hover-class="tap-press" data-detail="couponRecords" bindtap="openInfoDetail"><text>使用记录</text><text>暂无 ›</text></view></view>
+        </block>
+        <block wx:else>
+          <view class="acquire-panel soft-card"><view><text class="mini-caption">领取方式</text><text class="acquire-method">{{selectedCoupon.method}}</text></view><view><text class="mini-caption">领取后</text><text>自动放入“我的卡券”</text></view><view><text class="mini-caption">使用方式</text><text>到店出示二维码核销</text></view></view>
+          <view class="pickup-tip">领取成功前不会生成券码，也不能直接使用</view>
+          <button class="primary-button" hover-class="button-press" bindtap="claimCoupon">{{selectedCoupon.cta}}</button>
+        </block>
+      </view>
+    </block>
+
+    <!-- 积分与现金换礼 -->
+    <block wx:if="{{currentView === 'rewardExchange'}}">
+      <view class="content reward-page">
+        <view class="reward-product soft-card"><image src="{{exchangeCouponMode ? selectedCoupon.image : '/assets/images/pop-home/family-service.jpg'}}" mode="aspectFill" /><view><text class="result-title">{{exchangeCouponMode ? selectedCoupon.title : '设计师限定帆布袋'}}</text><text class="mini-caption">到店核销领取 · 库存{{exchangeCouponMode ? selectedCoupon.stock : 28}}件</text><text class="status">可兑换</text></view></view>
+        <view class="reward-config soft-card"><view class="config-title"><text>选择使用积分</text><text class="gold-number">{{rewardPoints}}积分</text></view><slider min="200" max="2000" step="200" value="{{rewardPoints}}" activeColor="#b48122" backgroundColor="#e6dccb" block-color="#e2bd66" bindchange="changeRewardPoints" /><view class="range-label"><text>200</text><text>可用 {{points}}</text><text>2000</text></view><view class="reward-price"><view><text class="mini-caption">使用积分</text><text>- {{rewardPoints}}</text></view><view><text class="mini-caption">需付现金</text><text class="cash-big">¥{{rewardCash}}</text></view></view></view>
+        <text class="section-title compact-title">余款支付方式</text>
+        <view class="payment-choice soft-card"><view class="tap-target {{rewardPayment === '微信支付' ? 'selected' : ''}}" hover-class="tap-press" data-payment="微信支付" bindtap="setRewardPayment"><view class="wechat-dot">微</view><view><text>微信支付</text><text class="mini-caption">在线完成余款支付</text></view><text>{{rewardPayment === '微信支付' ? '✓' : '○'}}</text></view><view class="tap-target {{rewardPayment === '到店支付' ? 'selected' : ''}}" hover-class="tap-press" data-payment="到店支付" bindtap="setRewardPayment"><view class="store-pay-dot">店</view><view><text>到店支付余下金额</text><text class="mini-caption">核销领取时现场支付</text></view><text>{{rewardPayment === '到店支付' ? '✓' : '○'}}</text></view></view>
+        <view class="pickup-tip">凭兑换码到 L1 会员礼宾台核销领取</view>
+        <button class="primary-button" hover-class="button-press" bindtap="confirmRewardExchange">确认兑换 · ¥{{rewardCash}}</button>
+      </view>
+    </block>
+
+    <!-- 会员资料 -->
+    <block wx:if="{{currentView === 'memberProfile'}}">
+      <view class="content form-page">
+        <view class="form-avatar member-theme-{{homeConfig.memberTheme}}"><image class="member-art-seal-image profile-art-seal-image" src="/assets/icons/pop/member-card.png" mode="aspectFit" /><text>{{homeConfig.memberLabel}}</text></view>
+        <view class="profile-invite-entry tap-target" hover-class="tap-press" data-target="inviteActivity" bindtap="navigate"><view class="profile-invite-icon">邀</view><view><text>邀请好友注册赚积分</text><text>每成功邀请1位好友，奖励300积分</text></view><view class="profile-invite-reward">+300<text>积分</text></view><text class="profile-invite-arrow">›</text></view>
+        <view class="form-card soft-card"><view class="form-row"><text>生日</text><picker mode="date" value="{{memberBirthday}}" bindchange="changeBirthday"><view class="form-value">{{memberBirthday}} ›</view></picker></view><view class="form-row gender-row"><text>性别</text><view><text wx:for="{{['男','女']}}" wx:key="*this" class="gender-chip {{memberGender === item ? 'active' : ''}} tap-target" hover-class="tap-press" data-gender="{{item}}" bindtap="setGender">{{item}}</text></view></view><view class="form-row"><text>手机号</text><input type="number" maxlength="11" value="{{memberPhone}}" bindinput="updateMemberPhone" /></view></view>
+        <text class="form-note">生日信息用于发放会员生日礼遇，保存后每年仅可修改一次。</text>
+        <button class="primary-button" hover-class="button-press" bindtap="saveProfile">保存会员资料</button>
+      </view>
+    </block>
+
+    <!-- 邀请好友活动 -->
+    <block wx:if="{{currentView === 'inviteActivity'}}">
+      <view class="content invite-page">
+        <view class="invite-hero">
+          <view class="invite-orbit invite-orbit-a"></view><view class="invite-orbit invite-orbit-b"></view>
+          <text class="invite-eyebrow">会员好友同行计划</text><text class="invite-title">邀请好友注册\n一起赚积分</text><text class="invite-subtitle">好友完成会员注册，你得300积分，好友得100积分</text>
+          <view class="invite-hero-badge"><text>邀</text><view><text>每邀1位</text><text>+300 积分</text></view></view>
+        </view>
+        <view class="invite-stats soft-card"><view><text>{{invitedCount}}</text><text>成功邀请</text></view><view class="stat-divider"></view><view><text>{{invitePoints}}</text><text>累计积分</text></view><view class="stat-divider"></view><view><text>10</text><text>本月上限</text></view></view>
+        <view class="invite-code-card"><view><text>我的专属邀请码</text><text class="invite-code">{{inviteCode}}</text></view><view class="invite-copy tap-target" hover-class="tap-press" bindtap="copyInviteCode">复制</view></view>
+        <text class="section-title compact-title">参与方式</text>
+        <view class="invite-steps soft-card"><view><text>1</text><view><text>分享邀请</text><text>复制邀请码或生成邀请卡</text></view></view><view><text>2</text><view><text>好友完成注册</text><text>好友使用手机号完成会员注册</text></view></view><view><text>3</text><view><text>积分自动到账</text><text>审核通过后24小时内发放</text></view></view></view>
+        <text class="section-title compact-title">邀请记录</text>
+        <view class="invite-records soft-card"><view wx:for="{{inviteRecords}}" wx:key="time"><view class="invite-record-avatar">{{item.initial}}</view><view><text>{{item.name}}</text><text>{{item.time}} · {{item.status}}</text></view><text class="invite-record-points">{{item.points}}</text></view></view>
+        <view class="invite-rules"><text>活动规则</text><text>每位新会员仅可绑定一个邀请人；同一设备或手机号重复注册不计入奖励；积分以系统审核结果为准。</text></view>
+        <button class="primary-button invite-share-button" hover-class="button-press" open-type="share">立即邀请好友</button>
+      </view>
+    </block>
+
+    <!-- 车辆管理 -->
+    <block wx:if="{{currentView === 'vehicles'}}">
+      <view class="content vehicle-page">
+        <view class="vehicle-summary"><text class="display-title">我的车辆</text><text class="points-pill">已录入 {{vehicles.length}} / 3</text></view>
+        <view wx:for="{{vehicles}}" wx:key="plate" class="vehicle-card soft-card"><view class="vehicle-plate"><text>{{item.plate}}</text><text wx:if="{{item.type === '新能源'}}" class="energy-tag">新能源</text></view><text class="mini-caption">{{item.primary ? '默认车辆 · 停车服务优先使用' : item.type + ' · 已绑定'}}</text><view class="vehicle-actions"><view class="tap-target" hover-class="tap-press" data-index="{{index}}" bindtap="editVehicle">编辑</view><view class="tap-target" hover-class="tap-press" data-index="{{index}}" bindtap="setPrimaryVehicle">{{item.primary ? '默认车辆 ✓' : '设为默认'}}</view></view></view>
+        <button class="secondary-button vehicle-add-button" hover-class="button-press" bindtap="addVehicle">＋录入新车牌</button>
+      </view>
+    </block>
+
+    <!-- 商户管理 -->
+    <block wx:if="{{currentView === 'merchantManage'}}">
+      <view class="content merchant-page">
+        <block wx:if="{{merchantPanel === 'home'}}">
+          <view class="merchant-workbench">
+            <view class="merchant-store-line"><view class="merchant-store-mark">店</view><view><text>商户工作台</text><text>{{mallName}} · 艺术书廊</text></view><text class="merchant-role">运营账号</text></view>
+            <view class="merchant-progress"><view><text>资料完整度</text><text>{{merchantProfileCompletion}}%</text></view><view class="merchant-progress-track"><view style="width: {{merchantProfileCompletion}}%;"></view></view><text>完善店铺资料有助于获得更多内容推荐</text></view>
+          </view>
+          <text class="merchant-section-label">商户应用</text>
+          <view class="merchant-app-grid">
+            <view class="merchant-app-card tap-target" hover-class="tap-press" data-panel="profile" bindtap="openMerchantPanel"><view class="merchant-app-icon">资</view><text>店铺资料</text><text>品牌介绍与媒体</text></view>
+            <view class="merchant-app-card tap-target" hover-class="tap-press" data-panel="news" bindtap="openMerchantPanel"><view class="merchant-app-icon">新</view><text>新品快讯</text><text>发布门店动态</text></view>
+            <view class="merchant-app-card tap-target" hover-class="tap-press" data-panel="marketing" bindtap="openMerchantPanel"><view class="merchant-app-icon">营</view><text>营销申请</text><text>权益与活动推广</text></view>
+            <view class="merchant-app-card tap-target" hover-class="tap-press" data-panel="approval" bindtap="openMerchantPanel"><view class="merchant-app-icon">审</view><text>审批进度</text><text>{{merchantPendingCount}} 项待跟进</text></view>
+          </view>
+          <text class="merchant-section-label">今日概览</text>
+          <view class="merchant-stats soft-card"><view><text>{{merchantProfileCompletion}}%</text><text>资料完整度</text></view><view><text>{{merchantPendingCount}}</text><text>待处理申请</text></view><view><text>1,286</text><text>近7日曝光</text></view></view>
+          <view class="merchant-reminder tap-target" hover-class="tap-press" data-panel="approval" bindtap="openMerchantPanel"><view class="merchant-reminder-icon">!</view><view><text>待办提醒</text><text>新品快讯正在审核，点击查看最新进度</text></view><text>›</text></view>
+          <view class="merchant-latest soft-card"><view class="merchant-latest-title"><text>最近提交</text><text class="tap-target" hover-class="tap-press" data-panel="approval" bindtap="openMerchantPanel">查看全部 ›</text></view><view wx:for="{{merchantApprovals}}" wx:key="title" wx:if="{{index < 2}}" class="merchant-latest-row"><view class="merchant-status-dot status-{{item.tone}}"></view><view><text>{{item.title}}</text><text>{{item.type}} · {{item.time}}</text></view><text class="merchant-status status-{{item.tone}}">{{item.status}}</text></view></view>
+        </block>
+
+        <block wx:if="{{merchantPanel === 'profile'}}">
+          <view class="merchant-subhead"><text class="display-title">店铺资料维护</text><text class="display-sub">完善品牌资料，提升门店展示效果</text></view>
+          <view class="merchant-form soft-card">
+            <text class="merchant-form-label">品牌名称</text><input value="{{merchantBrandName}}" data-field="merchantBrandName" bindinput="updateMerchantField" />
+            <text class="merchant-form-label">品牌描述</text><textarea value="{{merchantDescription}}" data-field="merchantDescription" bindinput="updateMerchantField"></textarea>
+            <view class="merchant-field-row"><view><text class="merchant-form-label">营业时间</text><input value="{{merchantHours}}" data-field="merchantHours" bindinput="updateMerchantField" /></view><view><text class="merchant-form-label">联系电话</text><input value="{{merchantPhone}}" data-field="merchantPhone" bindinput="updateMerchantField" /></view></view>
+            <text class="merchant-form-label">门店地址</text><input value="{{merchantAddress}}" data-field="merchantAddress" bindinput="updateMerchantField" />
+          </view>
+          <text class="merchant-section-label">店铺图片 / 视频</text>
+          <view class="merchant-media-row"><image src="/assets/images/pop-home/art-bookshop.jpg" mode="aspectFill" /><image src="/assets/images/pop-home/mall-guide.jpg" mode="aspectFill" /><view class="merchant-media-add tap-target" hover-class="tap-press" data-media="图片" bindtap="addMerchantMedia"><text>＋</text><text>图片 {{merchantImageCount}}</text></view><view class="merchant-media-add video tap-target" hover-class="tap-press" data-media="视频" bindtap="addMerchantMedia"><text>▶</text><text>视频 {{merchantVideoCount}}</text></view></view>
+          <button class="primary-button merchant-submit" hover-class="button-press" bindtap="saveMerchantProfile">保存并提交审核</button>
+        </block>
+
+        <block wx:if="{{merchantPanel === 'news'}}">
+          <view class="merchant-subhead"><text class="display-title">发布新品快讯</text><text class="display-sub">让会员第一时间看到门店新鲜内容</text></view>
+          <view class="merchant-form soft-card"><text class="merchant-form-label">快讯标题</text><input value="{{merchantNewsTitle}}" data-field="merchantNewsTitle" bindinput="updateMerchantField" /><text class="merchant-form-label">正文内容</text><textarea value="{{merchantNewsContent}}" data-field="merchantNewsContent" bindinput="updateMerchantField"></textarea></view>
+          <text class="merchant-section-label">选择封面</text>
+          <view class="merchant-cover-row"><image wx:for="{{['/assets/images/pop-home/family-service.jpg','/assets/images/pop-home/art-bookshop.jpg','/assets/images/pop-home/coffee-lifestyle.jpg']}}" wx:key="*this" class="{{merchantCover === item ? 'active' : ''}} tap-target" hover-class="tap-press" src="{{item}}" mode="aspectFill" data-cover="{{item}}" bindtap="chooseMerchantCover" /></view>
+          <text class="merchant-section-label">发布范围</text><view class="merchant-choice-row"><view class="merchant-choice {{merchantNewsAudience === '全部会员' ? 'active' : ''}} tap-target" hover-class="tap-press" data-audience="全部会员" bindtap="setMerchantAudience">全部会员</view><view class="merchant-choice {{merchantNewsAudience === homeConfig.memberLabel ? 'active' : ''}} tap-target" hover-class="tap-press" data-audience="{{homeConfig.memberLabel}}" bindtap="setMerchantAudience">{{homeConfig.memberLabel}}</view><view class="merchant-choice {{merchantNewsAudience === '兴趣客群' ? 'active' : ''}} tap-target" hover-class="tap-press" data-audience="兴趣客群" bindtap="setMerchantAudience">兴趣客群</view></view>
+          <button class="primary-button merchant-submit" hover-class="button-press" bindtap="submitMerchantNews">提交内容审核</button>
+        </block>
+
+        <block wx:if="{{merchantPanel === 'marketing'}}">
+          <view class="merchant-subhead"><text class="display-title">营销申请</text><text class="display-sub">提交权益、活动及推荐资源申请</text></view>
+          <view class="merchant-type-grid"><view wx:for="{{merchantMarketingTypes}}" wx:key="*this" class="merchant-type-card {{merchantMarketingType === item ? 'active' : ''}} tap-target" hover-class="tap-press" data-type="{{item}}" bindtap="selectMarketingType"><view>{{index === 0 ? '券' : (index === 1 ? '活' : '推')}}</view><text>{{item}}</text><text>{{index === 0 ? '发放会员礼遇' : (index === 1 ? '发起到店活动' : '申请首页曝光')}}</text></view></view>
+          <view class="merchant-form soft-card"><text class="merchant-form-label">申请主题</text><input value="{{merchantMarketingTitle}}" data-field="merchantMarketingTitle" bindinput="updateMerchantField" /><text class="merchant-form-label">申请说明</text><textarea value="{{merchantMarketingNote}}" data-field="merchantMarketingNote" bindinput="updateMerchantField"></textarea><view class="merchant-apply-summary"><text>申请类型</text><text>{{merchantMarketingType}}</text></view><view class="merchant-apply-summary"><text>预计审核</text><text>1—2个工作日</text></view></view>
+          <button class="primary-button merchant-submit" hover-class="button-press" bindtap="submitMarketingApply">提交营销申请</button>
+        </block>
+
+        <block wx:if="{{merchantPanel === 'approval'}}">
+          <view class="merchant-subhead"><text class="display-title">审批进度</text><text class="display-sub">查看内容与营销申请的处理状态</text></view>
+          <view class="merchant-filter-row"><view wx:for="{{merchantApprovalFilters}}" wx:key="*this" class="merchant-filter {{merchantApprovalFilter === item ? 'active' : ''}} tap-target" hover-class="tap-press" data-filter="{{item}}" bindtap="setMerchantApprovalFilter">{{item}}</view></view>
+          <view class="merchant-approval-list"><view wx:for="{{merchantApprovals}}" wx:key="title" wx:if="{{merchantApprovalFilter === '全部' || merchantApprovalFilter === item.status}}" class="merchant-approval-card soft-card"><view class="merchant-approval-top"><text>{{item.type}}</text><text class="merchant-status status-{{item.tone}}">{{item.status}}</text></view><text class="merchant-approval-title">{{item.title}}</text><text class="merchant-approval-time">{{item.time}}</text><view class="merchant-approval-foot"><text>{{item.note}}</text><view class="tap-target" hover-class="tap-press" data-detail="merchantApproval" data-index="{{index}}" bindtap="openInfoDetail">查看详情 ›</view></view></view></view>
+        </block>
+      </view>
+    </block>
+
+    <!-- 设置 -->
+    <block wx:if="{{currentView === 'settings'}}">
+      <view class="content settings-page"><view class="settings-list soft-card"><view class="tap-target" hover-class="tap-press" data-target="messages" bindtap="navigate"><text>消息通知</text><text>消息中心 ›</text></view><view class="tap-target" hover-class="tap-press" data-detail="privacy" bindtap="openInfoDetail"><text>隐私设置</text><text>›</text></view><view class="tap-target" hover-class="tap-press" bindtap="clearDemoCache"><text>清理缓存</text><text>{{cacheSize}} ›</text></view><view class="tap-target" hover-class="tap-press" data-detail="about" bindtap="openInfoDetail"><text>关于小程序</text><text>演示版 2.1 ›</text></view></view><button class="logout-button" hover-class="button-press" bindtap="logoutDemo">退出登录</button></view>
+    </block>
+
+    <!-- 页面自定义 -->
+    <block wx:if="{{currentView === 'pageCustomize'}}">
+      <view class="content customizer-page">
+        <view class="customizer-head">
+          <view class="customizer-title-copy"><text class="display-title">首页装修</text><text class="display-sub">选择组件，即时生成客户演示页面</text></view>
+          <view class="customizer-count">{{selectedComponents.length}} 个组件</view>
+        </view>
+        <view class="customizer-preview soft-card">
+          <image class="customizer-preview-image" src="/assets/images/pop-home/art-festival.jpg" mode="aspectFill" />
+          <view class="customizer-preview-shade"></view>
+          <view class="customizer-preview-copy"><text class="customizer-preview-title">当前首页预览</text><text class="customizer-preview-sub">艺术空间 · 会员礼遇</text></view>
+          <view class="customizer-preview-cards"><view class="customizer-preview-card"></view><view class="customizer-preview-card"></view><view class="customizer-preview-card"></view></view>
+        </view>
+        <view class="customizer-toolbar">
+          <view class="customizer-preview-button tap-target" hover-class="tap-press" bindtap="previewCustomPage">预览页面</view>
+          <view class="customizer-save-button tap-target" hover-class="tap-press" bindtap="saveCustomPage">保存配置</view>
+        </view>
+        <view class="selected-components soft-card">
+          <view class="customizer-section-title"><text>已启用组件</text><text>{{selectedComponents.length}} 项</text></view>
+          <view class="selected-component-list"><text wx:for="{{selectedComponents}}" wx:key="*this" class="selected-component-chip">{{item}}</text></view>
+        </view>
+        <view class="content-ops-panel">
+          <view class="content-ops-head"><view><text>内容运营预览</text><text>{{mallName}} · {{homeConfig.memberLabel}} · 本周</text></view><view class="content-ops-live"><text></text>实时数据</view></view>
+          <view class="content-ops-types"><text>Banner</text><text>专题页</text><text>品牌故事</text><text>商场资讯</text><text>活动攻略</text><text>服务推荐</text></view>
+          <view class="content-ops-metrics"><view wx:for="{{contentOpsMetrics}}" wx:key="label"><text>{{item.label}}</text><text>{{item.value}}</text><text>{{item.trend}}</text></view></view>
+          <view class="content-schedule-title"><text>发布计划</text><text class="tap-target" hover-class="tap-press" data-detail="contentStats" bindtap="openInfoDetail">查看明细 ›</text></view>
+          <view class="content-schedule-list"><view wx:for="{{contentSchedule}}" wx:key="title"><view class="content-schedule-icon">{{index === 0 ? '专' : '攻'}}</view><view><text>{{item.title}}</text><text>{{item.audience}} · {{item.time}}</text></view><text class="content-schedule-status schedule-{{item.tone}}">{{item.status}}</text></view></view>
+        </view>
+        <view wx:for="{{pageComponentGroups}}" wx:key="name" wx:for-item="group" wx:for-index="groupIndex" class="component-group">
+          <view class="component-group-title"><text class="component-group-name">{{group.name}}</text><text class="component-group-chevron">⌃</text></view>
+          <view class="component-grid">
+            <view wx:for="{{group.items}}" wx:key="name" wx:for-item="component" wx:for-index="componentIndex" class="component-cell {{component.selected ? 'selected' : ''}} tap-target" hover-class="tap-press" data-group-index="{{groupIndex}}" data-component-index="{{componentIndex}}" bindtap="togglePageComponent">
+              <view class="component-icon">{{component.icon}}</view>
+              <text class="component-name">{{component.name}}</text>
+              <text wx:if="{{component.selected}}" class="component-check">✓</text>
+            </view>
+          </view>
+        </view>
+        <button class="primary-button customizer-bottom-save" hover-class="button-press" bindtap="saveCustomPage">保存页面配置</button>
+      </view>
+    </block>
+
+    <!-- 购物车 -->
+    <block wx:if="{{currentView === 'cart'}}">
+      <view class="content cart-page"><view wx:for="{{cartItems}}" wx:key="name" class="cart-item soft-card"><image src="{{item.image}}" mode="aspectFill" /><view class="cart-copy"><text class="result-title">{{item.name}}</text><text class="product-points">{{item.points}}积分{{item.cash ? ' + ¥' + item.cash : ''}}</text><view class="qty-stepper"><view class="tap-target" hover-class="tap-press" data-index="{{index}}" data-delta="-1" bindtap="changeCartQty">−</view><text>{{item.qty}}</text><view class="tap-target" hover-class="tap-press" data-index="{{index}}" data-delta="1" bindtap="changeCartQty">＋</view></view></view></view><view class="cart-summary soft-card"><view><text>商品数量</text><text>{{cartCount}}件</text></view><view><text>所需积分</text><text>{{cartTotalPoints}}积分</text></view><view><text>需付现金</text><text class="cash-big">¥{{cartTotalCash}}</text></view></view><button class="primary-button" hover-class="button-press" data-target="checkout" bindtap="navigate">去结算</button></view>
+    </block>
+
+    <!-- 商城结算 -->
+    <block wx:if="{{currentView === 'checkout'}}">
+      <view class="content checkout-page">
+        <text class="section-title compact-title">收货地址</text>
+        <view class="address-card soft-card"><input value="{{addressName}}" data-field="addressName" bindinput="updateAddress" placeholder="收货人"/><input type="number" value="{{addressPhone}}" data-field="addressPhone" bindinput="updateAddress" placeholder="手机号"/><textarea value="{{addressDetail}}" data-field="addressDetail" bindinput="updateAddress" placeholder="省市区及详细地址"></textarea></view>
+        <text class="section-title compact-title">兑换清单</text>
+        <view class="checkout-goods soft-card"><view wx:for="{{cartItems}}" wx:key="name"><image src="{{item.image}}" mode="aspectFill"/><text>{{item.name}} ×{{item.qty}}</text></view></view>
+        <text class="section-title compact-title">积分与现金</text>
+        <view class="reward-config checkout-reward-config soft-card">
+          <view class="config-title"><text>选择使用积分</text><text class="gold-number">{{checkoutPoints}}积分</text></view>
+          <slider min="200" max="{{checkoutMaxPoints}}" step="200" value="{{checkoutPoints}}" activeColor="#b48122" backgroundColor="#e6dccb" block-color="#e2bd66" bindchange="changeCheckoutPoints" />
+          <view class="range-label"><text>200</text><text>可用 {{points}}</text><text>{{checkoutMaxPoints}}</text></view>
+          <view class="reward-price"><view><text class="mini-caption">使用积分</text><text>- {{checkoutPoints}}</text></view><view><text class="mini-caption">需付现金</text><text class="cash-big">¥{{checkoutCash}}</text></view></view>
+          <text class="checkout-rate">少用100积分，现金增加¥1.00</text>
+        </view>
+        <text class="section-title compact-title">支付方式</text>
+        <view class="payment-choice soft-card"><view class="tap-target {{checkoutPayment === '微信支付' ? 'selected' : ''}}" hover-class="tap-press" data-payment="微信支付" bindtap="setCheckoutPayment"><view class="wechat-dot">微</view><view><text>微信支付</text><text class="mini-caption">支付兑换订单现金部分</text></view><text>{{checkoutPayment === '微信支付' ? '✓' : '○'}}</text></view><view class="tap-target {{checkoutPayment === '到店支付' ? 'selected' : ''}}" hover-class="tap-press" data-payment="到店支付" bindtap="setCheckoutPayment"><view class="store-pay-dot">店</view><view><text>到店支付</text><text class="mini-caption">到店核销后支付余款</text></view><text>{{checkoutPayment === '到店支付' ? '✓' : '○'}}</text></view></view>
+        <view class="checkout-total"><text>合计 {{checkoutPoints}}积分</text><text>+ ¥{{checkoutCash}}</text></view>
+        <button class="primary-button" hover-class="button-press" bindtap="submitOrder">提交兑换订单 · ¥{{checkoutCash}}</button>
+      </view>
+    </block>
+
+    <!-- 活动报名凭证 -->
+    <block wx:if="{{currentView === 'activityPass'}}">
+      <view class="content pass-page">
+        <view class="pass-ticket soft-card"><image src="{{selectedActivity.image}}" mode="aspectFill" /><view class="pass-copy"><text class="eyebrow">REGISTRATION PASS</text><text class="display-title">{{selectedActivity.title}}</text><text class="display-sub">{{selectedDate}} · {{selectedActivity.location}}</text></view><view class="pass-status">报名成功</view></view>
+        <view class="pass-code soft-card"><view class="qr-code reward-qr"><view wx:for="{{qrCells}}" wx:key="index" class="qr-cell {{item ? 'qr-dark' : ''}}"></view></view><text class="coupon-code-number">凭证 {{activityCredential || 'HD20260726001'}}</text><text class="microcopy">活动开始前30分钟开放签到，请向现场工作人员出示</text></view>
+        <view class="detail-meta soft-card"><view><text class="mini-caption">参与人</text><text>陈女士</text></view><view><text class="mini-caption">人数</text><text>1人</text></view><view><text class="mini-caption">状态</text><text class="status">待签到</text></view></view>
+        <button class="share-link" open-type="share">分享活动给好友</button><button class="secondary-button" data-target="activityList" bindtap="navigate">继续发现活动</button>
+      </view>
+    </block>
+
+    <!-- 已结束活动回顾 -->
+    <block wx:if="{{currentView === 'activityRecap'}}">
+      <view class="content recap-page"><image class="recap-cover" src="{{selectedActivity.image}}" mode="aspectFill" /><text class="eyebrow">EVENT RECAP</text><text class="display-title">{{selectedActivity.title}} · 精选回顾</text><text class="display-sub">光影、建筑与城市生活在现场相遇</text><view class="recap-stats soft-card"><view><text>286</text><text>到场会员</text></view><view><text>4.9</text><text>活动评分</text></view><view><text>92%</text><text>推荐意愿</text></view></view><view class="content-article-section"><text>现场片段</text><text>{{selectedActivity.description}}</text></view><button class="primary-button" data-target="activityList" bindtap="navigate">查看正在进行的活动</button></view>
+    </block>
+
+    <!-- 我的订单 -->
+    <block wx:if="{{currentView === 'orders'}}">
+      <view class="content record-page"><view class="record-head"><text class="display-title">我的订单</text><text class="display-sub">兑换、支付与领取状态</text></view><view wx:if="{{orderNumber}}" class="order-card soft-card"><view><text>积分商城兑换</text><text class="status">待领取</text></view><text class="result-title">设计师限定帆布袋</text><text class="mini-caption">订单 {{orderNumber}} · {{checkoutPoints}}积分 + ¥{{checkoutCash}}</text><view class="order-actions"><text>查看兑换码</text><text>到店领取 ›</text></view></view><view class="order-card soft-card"><view><text>活动报名</text><text class="status">已完成</text></view><text class="result-title">夏日设计市集工作坊</text><text class="mini-caption">订单 HD202607181206 · 07月18日</text><view class="order-actions"><text>已签到</text><text>查看详情 ›</text></view></view></view>
+    </block>
+
+    <!-- 消息中心 -->
+    <block wx:if="{{currentView === 'messages'}}">
+      <view class="content message-page"><view class="record-head"><text class="display-title">消息中心</text><text class="display-sub">活动、权益与服务进度</text></view><view class="message-card soft-card"><view class="message-icon">活</view><view><text class="result-title">活动报名成功</text><text class="mini-caption">海滨当代艺术展报名凭证已生成</text><text class="message-time">今天 14:20</text></view><text class="unread-dot"></text></view><view class="message-card soft-card"><view class="message-icon">券</view><view><text class="result-title">卡券即将到期</text><text class="mini-caption">{{homeConfig.memberLabel}}停车减免券还有3天到期</text><text class="message-time">昨天 18:10</text></view></view><view class="message-card soft-card"><view class="message-icon">审</view><view><text class="result-title">商户申请状态更新</text><text class="mini-caption">店铺资料更新已通过审核</text><text class="message-time">07月16日 10:08</text></view></view></view>
+    </block>
+
+    <!-- 停车记录与开票 -->
+    <block wx:if="{{currentView === 'parkingRecords'}}">
+      <view class="content record-page"><view class="record-head"><text class="display-title">停车记录</text><text class="display-sub">近30天停车与优惠使用情况</text></view><view class="parking-history-card soft-card"><view><text>{{mallName}}</text><text class="status">{{parkingPaid ? '已支付' : '待支付'}}</text></view><text class="plate">{{selectedParkingPlate}}</text><view><text>07月21日 12:18—15:44</text><text>实付 ¥6.00</text></view><text class="mini-caption">{{homeConfig.memberName}}减免2小时 · 停车券抵扣¥10</text></view><view class="parking-history-card soft-card"><view><text>云庭城市广场</text><text class="status">已完成</text></view><text class="plate">粤B·D88888</text><view><text>07月12日 18:30—21:08</text><text>实付 ¥0.00</text></view><text class="mini-caption">乐游卡停车权益全额抵扣</text></view></view>
+    </block>
+    <block wx:if="{{currentView === 'invoice'}}">
+      <view class="content invoice-page"><block wx:if="{{!invoiceSubmitted}}"><view class="record-head"><text class="display-title">停车电子发票</text><text class="display-sub">本次可开票金额 ¥6.00</text></view><view class="invoice-form soft-card"><text>发票抬头</text><input value="{{invoiceTitle}}" data-field="invoiceTitle" bindinput="updateInvoiceField" placeholder="个人或企业名称"/><text>接收邮箱</text><input value="{{invoiceEmail}}" data-field="invoiceEmail" bindinput="updateInvoiceField" placeholder="电子邮箱"/><view><text>开票项目</text><text>停车服务费</text></view><view><text>开票金额</text><text>¥6.00</text></view></view><button class="primary-button" bindtap="submitInvoice">提交开票申请</button></block><block wx:else><view class="success-panel soft-card"><view class="success-orb">✓</view><text class="display-title">开票申请已提交</text><text class="display-sub">电子发票预计10分钟内发送至 {{invoiceEmail}}</text><view class="detail-meta"><view><text class="mini-caption">金额</text><text>¥6.00</text></view><view><text class="mini-caption">状态</text><text>开票中</text></view></view><button class="secondary-button" data-target="parkingRecords" bindtap="navigate">返回停车记录</button></view></block></view>
+    </block>
+
+    <!-- 车辆录入与编辑 -->
+    <block wx:if="{{currentView === 'vehicleEdit'}}">
+      <view class="content vehicle-edit-page">
+        <view class="record-head"><text class="display-title">{{vehicleEditIndex >= 0 ? '编辑车辆' : '录入新车辆'}}</text><text class="display-sub">填写车牌归属地与号码，保存后可用于停车服务</text></view>
+        <view class="plate-live-card soft-card">
+          <view class="plate-live-head"><text>车牌预览</text><text>{{vehicleFormType}}</text></view>
+          <view class="plate-preview-row">
+            <view class="plate-preview-cell filled">{{vehicleProvince}}</view><view class="plate-preview-cell filled">{{vehicleCityCode || 'B'}}</view><text class="plate-preview-dot">·</text><view wx:for="{{vehiclePlateSlots}}" wx:key="key" class="plate-preview-cell {{item.value ? 'filled' : ''}}">{{item.value || ' '}}</view>
+          </view>
+        </view>
+        <view class="plate-input-card soft-card">
+          <text>车牌号码</text>
+          <view class="plate-input-row">
+            <picker mode="selector" range="{{plateProvinces}}" value="{{vehicleProvinceIndex}}" bindchange="selectVehicleProvince"><view class="plate-part-input province">{{vehicleProvince}}<text>⌄</text></view></picker>
+            <input class="plate-part-input city" maxlength="1" value="{{vehicleCityCode}}" bindinput="updateVehicleCity" placeholder="B" />
+            <text class="plate-input-dot">·</text>
+            <input class="plate-number-input" maxlength="{{vehicleNumberMaxLength}}" value="{{vehicleNumber}}" bindinput="updateVehicleNumber" placeholder="{{vehicleFormType === '新能源' ? 'D12345' : 'A1234'}}" />
+          </view>
+          <text class="mini-caption">省份简称可选择，字母和号码会自动转为大写</text>
+        </view>
+        <text class="section-title compact-title">车辆类型</text>
+        <view class="vehicle-type-row"><view class="tap-target {{vehicleFormType === '燃油车' ? 'active' : ''}}" hover-class="tap-press" data-type="燃油车" bindtap="setVehicleType">普通车牌<text>5位号码</text></view><view class="tap-target {{vehicleFormType === '新能源' ? 'active' : ''}}" hover-class="tap-press" data-type="新能源" bindtap="setVehicleType">新能源车牌<text>6位号码</text></view></view>
+        <button class="primary-button {{vehicleFormValid ? '' : 'vehicle-save-disabled'}}" hover-class="button-press" bindtap="saveVehicle">保存车辆</button>
+      </view>
+    </block>
+
+    <!-- 页面装修预览 -->
+    <block wx:if="{{currentView === 'customPreview'}}">
+      <view class="custom-live-page"><view class="custom-live-hero"><image src="/assets/images/pop-home/art-festival.jpg" mode="aspectFill"/><view><text>海境艺术中心</text><text>艺术与生活灵感</text></view></view><view class="content"><view class="custom-live-note">当前启用 {{selectedComponents.length}} 个组件</view><view wx:for="{{selectedComponents}}" wx:key="*this" class="custom-live-module soft-card"><view class="component-icon">{{index + 1}}</view><view><text class="result-title">{{item}}</text><text class="mini-caption">组件内容已按当前商场与会员客群生成</text></view><text>✓</text></view><button class="secondary-button" data-target="pageCustomize" bindtap="navigate">返回继续编辑</button></view></view>
+    </block>
+
+    <!-- 兑换订单结果 -->
+    <block wx:if="{{currentView === 'orderSuccess'}}">
+      <view class="content order-success-page"><view class="success-panel soft-card"><view class="success-orb">✓</view><text class="display-title">兑换订单已提交</text><text class="display-sub">{{checkoutPayment === '微信支付' ? '现金部分支付完成，等待发货' : '订单已保留，请到店支付余款并领取'}}</text><view class="order-result-lines"><view><text>订单号</text><text>{{orderNumber}}</text></view><view><text>使用积分</text><text>{{checkoutPoints}}积分</text></view><view><text>现金金额</text><text>¥{{checkoutCash}}</text></view><view><text>配送地址</text><text>{{addressDetail}}</text></view></view><button class="primary-button" data-target="orders" bindtap="navigate">查看我的订单</button><button class="secondary-button" data-target="mall" bindtap="navigate">继续逛积分商城</button></view></view>
+    </block>
+
+    <!-- 通用结构化详情 -->
+    <block wx:if="{{currentView === 'infoDetail'}}">
+      <view class="content info-detail-page"><text class="eyebrow">{{infoDetail.eyebrow}}</text><text class="display-title">{{infoDetail.title}}</text><text class="info-summary">{{infoDetail.summary}}</text><view class="info-rows soft-card"><view wx:for="{{infoDetail.rows}}" wx:key="label"><text>{{item.label}}</text><text>{{item.value}}</text></view></view><view class="info-note"><text>说明</text><text>{{infoDetail.note}}</text></view><button class="secondary-button" data-target="customerService" bindtap="navigate">需要帮助，联系在线客服</button></view>
+    </block>
+
+    <!-- 会员服务 -->
+    <block wx:if="{{currentView === 'service'}}">
+      <view class="content service-page">
+        <view class="service-hero">
+          <view class="service-hero-orbit"></view>
+          <view class="service-hero-copy"><text class="eyebrow">MEMBER SERVICE</text><text class="display-title">需要什么服务？</text><text class="display-sub">导览、客服与礼宾服务随时响应</text></view>
+          <view class="service-hero-mark"><text>服</text><text>SERVICES</text></view>
+        </view>
+        <view class="service-card tap-target" hover-class="tap-press" data-target="guide" bindtap="navigate"><image src="/assets/images/pop-home/floor-guide-colorful.jpg" mode="aspectFill"/><view><text class="result-title">楼层导览</text><text class="mini-caption">立体地图 · 路线规划 · 设施查找</text></view><text>›</text></view>
+        <view class="service-card tap-target" hover-class="tap-press" data-target="customerService" bindtap="navigate"><image src="/assets/images/pop-home/art-bookshop.jpg" mode="aspectFill"/><view><text class="result-title">在线客服</text><text class="mini-caption">实时会话 · 活动及会员咨询</text></view><text>›</text></view>
+        <view class="service-card tap-target" hover-class="tap-press" data-target="concierge" bindtap="navigate"><image src="/assets/images/pop-home/family-service.jpg" mode="aspectFill"/><view><text class="result-title">礼宾物品借用</text><text class="mini-caption">婴儿车、轮椅、充电宝与雨伞</text></view><text>›</text></view>
+        <view class="receipt-entry soft-card tap-target" hover-class="tap-press" data-target="receipt" bindtap="navigate"><view class="receipt-entry-icon">扫</view><view><text class="result-title">扫码小票积分</text><text class="mini-caption">消费后上传小票，积分轻松到账</text></view><text class="gold-arrow">›</text></view>
+      </view>
+    </block>
+
+    <!-- 客服会话 -->
+    <block wx:if="{{currentView === 'customerService'}}">
+      <view class="content chat-page"><view class="agent-card soft-card"><view class="agent-avatar">艺</view><view><text class="result-title">会员客服</text><text class="online-dot">● 在线 · 通常立即回复</text></view></view><view class="quick-chat"><text wx:for="{{['活动时间','停车优惠','积分到账']}}" wx:key="*this" class="tap-target" hover-class="tap-press" data-message="{{item}}" bindtap="useQuickMessage">{{item}}</text></view><view class="chat-stream"><view wx:for="{{chatMessages}}" wx:key="index" class="chat-line {{item.side}}"><view class="chat-bubble">{{item.text}}</view><text>{{item.time}}</text></view></view><view class="chat-composer"><input value="{{chatInput}}" bindinput="onChatInput" placeholder="请输入咨询内容"/><button hover-class="button-press" bindtap="sendMessage">发送</button></view></view>
+    </block>
+
+    <!-- 礼宾借用 -->
+    <block wx:if="{{currentView === 'concierge'}}">
+      <view class="content concierge-page"><view class="concierge-head"><text class="display-title">礼宾物品借用</text><text class="display-sub">在线申请，到 L1 会员礼宾台领取</text></view><view class="borrow-grid"><view wx:for="{{borrowItems}}" wx:key="name" class="borrow-card soft-card"><view class="borrow-icon">{{item.icon}}</view><text class="result-title">{{item.name}}</text><text class="mini-caption">{{item.note}}</text><view class="borrow-bottom"><text>库存 {{item.stock}}</text><view class="small-gold-button tap-target" hover-class="tap-press" data-name="{{item.name}}" bindtap="borrowItem">立即借用</view></view></view></view><view class="loan-record soft-card"><view><text class="result-title">我的借用记录</text><text class="mini-caption">查询领取、归还与历史记录</text></view><text>{{loanRecords.length ? loanRecords.length + '项待领取' : '暂无归还'}}</text></view><view wx:for="{{loanRecords}}" wx:key="code" class="loan-item soft-card"><view class="borrow-icon small">借</view><view><text class="result-title">{{item.name}} · {{item.status}}</text><text class="mini-caption">{{item.location}} · 凭证 {{item.code}}</text></view></view></view>
+    </block>
+  </view>
+
+  <!-- 通用底部导航 -->
+  <view wx:if="{{showBottom}}" class="bottom-nav">
+    <view class="bottom-item {{bottomActive === 'home' ? 'active' : ''}} tap-target" hover-class="tap-press" data-target="home" bindtap="switchBottom"><view class="pop-bottom-icon">⌂</view><text class="bottom-label">首页</text></view>
+    <view class="bottom-item {{bottomActive === 'search' ? 'active' : ''}} tap-target" hover-class="tap-press" data-target="search" bindtap="switchBottom"><view class="pop-bottom-icon">⌕</view><text class="bottom-label">找店</text></view>
+    <view class="bottom-item {{bottomActive === 'benefits' ? 'active' : ''}} tap-target" hover-class="tap-press" data-target="coupons" bindtap="switchBottom"><view class="pop-bottom-icon pop-bottom-bag">▱</view><text class="bottom-label">礼遇商城</text></view>
+    <view class="bottom-item {{bottomActive === 'services' ? 'active' : ''}} tap-target" hover-class="tap-press" data-target="service" bindtap="switchBottom"><view class="pop-bottom-icon">♡</view><text class="bottom-label">服务</text></view>
+    <view class="bottom-item {{bottomActive === 'profile' ? 'active' : ''}} tap-target" hover-class="tap-press" data-target="profile" bindtap="switchBottom"><view class="pop-bottom-icon">♙</view><text class="bottom-label">我的</text></view>
+  </view>
+
+  <view wx:if="{{currentView === 'service' || currentView === 'customerService' || currentView === 'concierge'}}" class="service-toolbar">
+    <view class="tap-target" hover-class="tap-press" data-target="guide" bindtap="navigate"><text>导</text><text>导览</text></view>
+    <view class="tap-target {{currentView === 'customerService' ? 'active' : ''}}" hover-class="tap-press" data-target="customerService" bindtap="navigate"><text>客</text><text>客服</text></view>
+    <view class="tap-target {{currentView === 'concierge' ? 'active' : ''}}" hover-class="tap-press" data-target="concierge" bindtap="navigate"><text>礼</text><text>礼宾借用</text></view>
+  </view>
+
+  <!-- 云庭城市广场入场活动：确认或关闭后进入商场首页 -->
+  <view wx:if="{{mallWelcomeAdOpen}}" class="mall-welcome-ad-mask" catchtap="stopBubble" catchtouchmove="stopBubble">
+    <view class="mall-welcome-ad-shell" catchtap="stopBubble">
+      <view class="mall-welcome-ad-paper">
+        <view class="mall-welcome-ad-close tap-target" hover-class="mall-welcome-close-press" bindtap="closeMallWelcomeAd">×</view>
+        <view class="mall-welcome-ad-head"><text>WELCOME TO YUNTING</text><text>限定入场活动</text></view>
+        <view class="mall-welcome-ad-title"><text>云上夏日</text><text>乐游奇遇季</text></view>
+        <view class="mall-welcome-ad-ribbon">7.25—8.31 · 天台花园见</view>
+        <image class="mall-welcome-ad-image" src="/assets/images/pop-home/rooftop-music.jpg" mode="widthFix" />
+        <view class="mall-welcome-ad-copy"><text>天台落日音乐会</text><text>同意参加即可开启活动提醒，乐游卡会员享专属观演区与双倍积分。</text></view>
+        <view class="mall-welcome-ad-perks"><view><text>2×</text><text>活动积分</text></view><view><text>VIP</text><text>会员专席</text></view><view><text>🎵</text><text>周末现场</text></view></view>
+        <view class="mall-welcome-ad-accept tap-target" hover-class="mall-welcome-accept-press" catchtap="acceptMallWelcomeAd">同意参加并进入</view>
+        <text class="mall-welcome-ad-note">也可点击右上角关闭，直接进入商场首页</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 商场切换弹层 -->
+  <view wx:if="{{mallSheetOpen}}" class="sheet-mask" catchtap="closeMallSheet">
+    <view class="bottom-sheet" catchtap="stopBubble">
+      <view class="sheet-handle"></view><text class="sheet-title">选择商场</text>
+      <view class="search-box"><text>⌕</text><text class="search-placeholder">搜索商场</text></view>
+      <view class="location-hint">当前定位　深圳</view>
+      <view class="mall-collection-entry tap-target" hover-class="tap-press" bindtap="openMallCollection"><view class="mall-collection-mini"><text class="mall-thumb-coast">海</text><text class="mall-thumb-sunset">云</text><text class="mall-thumb-garden">湾</text></view><view><text>全部商场</text><text>3座商场 · 活动、权益与服务聚合展示</text></view><text>详情 ›</text></view>
+      <view class="mall-list"><view wx:for="{{malls}}" wx:key="name" class="mall-option tap-target" hover-class="tap-press" data-mall="{{item.name}}" bindtap="selectMall"><view class="mall-thumb mall-thumb-{{item.tone}}">{{item.initial}}</view><view class="mall-option-copy"><view class="mall-option-title-row"><text>{{item.name}}</text><text wx:if="{{item.name === mallName}}" class="current-label">当前商场</text></view><text class="mall-option-note">{{item.note}}</text></view><view class="radio {{selectedMall === item.name ? 'selected' : ''}}">{{selectedMall === item.name ? '✓' : ''}}</view></view></view>
+      <view class="sheet-actions"><button class="secondary-button" hover-class="button-press" bindtap="closeMallSheet">取消</button><button class="primary-button" hover-class="button-press" bindtap="confirmMall">确认切换</button></view>
+    </view>
+  </view>
+
+  <!-- 积分兑换确认 -->
+  <view wx:if="{{exchangeOpen}}" class="sheet-mask" catchtap="closeExchange">
+    <view class="confirm-card" catchtap="stopBubble"><view class="confirm-icon">{{exchangeProduct.icon}}</view><text class="sheet-title">确认兑换</text><text class="confirm-name">{{exchangeProduct.name}}</text><text class="confirm-cost">将扣除 {{exchangeProduct.points}} 积分</text><view class="sheet-actions"><button class="secondary-button" hover-class="button-press" bindtap="closeExchange">再想想</button><button class="primary-button" hover-class="button-press" bindtap="confirmExchange">确认兑换</button></view></view>
+  </view>
+</view>

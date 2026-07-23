@@ -1,0 +1,12 @@
+# WeChat DevTools local preferences
+project.private.config.json
+
+# Local CLI and debug logs
+*.log
+
+# Dependencies and generated files
+node_modules/
+miniprogram_npm/
+.DS_Store
+Thumbs.db
+

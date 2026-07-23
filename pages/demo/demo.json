@@ -1,0 +1,6 @@
+{
+  "navigationStyle": "custom",
+  "disableScroll": false,
+  "onReachBottomDistance": 180,
+  "backgroundColor": "#f7faf9"
+}

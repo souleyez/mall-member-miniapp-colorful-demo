@@ -1,0 +1,4 @@
+<view class="route-loading">
+  <view class="route-mark">艺</view>
+  <text>正在进入个人中心</text>
+</view>

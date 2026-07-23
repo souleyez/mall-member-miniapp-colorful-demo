@@ -1,0 +1,20 @@
+{
+  "pages": [
+    "pages/demo/demo",
+    "pages/home/home",
+    "pages/index/index",
+    "pages/history/history",
+    "pages/account/account",
+    "pages/project-preview/project-preview",
+    "pages/robot-config/robot-config",
+    "pages/webview/webview"
+  ],
+  "window": {
+    "navigationStyle": "custom",
+    "backgroundColor": "#f7faf9",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}
