@@ -32,3 +32,12 @@ node scripts\validate-demo.mjs
 ```
 
 校验包含 AppID、入口、处理器、页面目标、主要业务流程、五栏导航、彩色主题、禁用品牌词、外部链接及 WXML 标签平衡。
+
+## 项目文档
+
+- [GitHub Wiki](https://github.com/souleyez/mall-member-miniapp-colorful-demo/wiki)
+- [演示与使用规则](https://github.com/souleyez/mall-member-miniapp-colorful-demo/wiki/演示与使用规则)
+
+## 许可证
+
+本项目采用 [MIT License](LICENSE) 开源。
